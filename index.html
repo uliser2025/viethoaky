@@ -1,0 +1,1169 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Việt Họa Ký</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600&family=Dancing+Script:wght@600;700&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                        script: ['Dancing Script', 'cursive'],
+                    },
+                    colors: {
+                        primary: '#851616',
+                        secondary: '#d4af37',
+                        dark: '#2d2822',
+                        light: '#Fdfbf7',
+                        accent: '#e2d5c3'
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Lenis Library for Smooth Scrolling -->
+    <script src="https://unpkg.com/@studio-freight/lenis@1.0.39/dist/lenis.min.js"></script>
+
+    <!-- CSS Bổ sung -->
+    <style>
+        /* Texture Overlay giả lập chất liệu giấy */
+        .noise-overlay {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            opacity: 0.03;
+            z-index: 50;
+            mix-blend-mode: multiply;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+
+        /* Hiệu ứng Reveal on Scroll */
+        .reveal {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: all 1s ease-out;
+        }
+        .reveal.reveal-left { transform: translateX(-40px); }
+        .reveal.reveal-right { transform: translateX(40px); }
+        .reveal.active {
+            opacity: 1;
+            transform: translate(0, 0);
+        }
+
+        /* Ẩn hiện các view */
+        .view-section {
+            display: none;
+            animation: fadeIn 0.8s ease-out forwards;
+        }
+        .view-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        ::selection { background-color: #851616; color: white; }
+
+        /* Lenis CSS fixes */
+        html.lenis { height: auto; }
+        .lenis.lenis-smooth { scroll-behavior: auto !important; }
+        .lenis.lenis-smooth [data-lenis-prevent] { overscroll-behavior: contain; }
+        .lenis.lenis-stopped { overflow: hidden; }
+        .lenis.lenis-scrolling iframe { pointer-events: none; }
+        
+        /* Form inputs styling for Footer */
+        .input-field {
+            width: 100%;
+            background-color: transparent;
+            border: none;
+            border-bottom: 1px solid rgba(255,255,255,0.3);
+            color: white;
+            padding: 12px 0;
+            margin-bottom: 24px;
+            font-family: 'Inter', sans-serif;
+            transition: border-color 0.3s ease;
+        }
+        .input-field:focus {
+            outline: none;
+            border-bottom-color: #d4af37;
+        }
+        .input-field::placeholder {
+            color: rgba(255,255,255,0.5);
+        }
+    </style>
+</head>
+<body class="bg-light text-dark font-sans relative overflow-x-hidden">
+
+    <!-- Texture Overlay -->
+    <div class="noise-overlay"></div>
+
+    <!-- Navbar -->
+    <nav id="navbar" class="fixed w-full z-40 transition-all duration-500 bg-transparent py-6">
+        <div class="max-w-7xl mx-auto px-6 md:px-12 flex justify-between items-center">
+            
+            <!-- Logo -->
+            <div id="logo-container" onclick="navigate('home')" class="cursor-pointer flex items-center gap-3 transition-colors duration-300 group">
+                <svg id="main-logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 200" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" class="w-16 h-8 md:w-24 md:h-12 transition-colors duration-500 text-white">
+                    <path d="M220,70 Q300,75 380,85 Q280,95 220,85 Z" stroke-width="3"/>
+                    <path d="M220,78 L360,85" stroke-width="2"/>
+                    <path d="M220,70 L180,60 L170,85 L220,85" stroke-width="3"/>
+                    <circle cx="205" cy="74" r="2" fill="currentColor"/>
+                    <circle cx="205" cy="74" r="6" stroke-width="2"/>
+                    <path d="M180,60 L125,50 L135,65" stroke-width="2.5"/>
+                    <path d="M175,70 L115,65 L125,78" stroke-width="2.5"/>
+                    <path d="M170,80 L110,80 L120,90" stroke-width="2.5"/>
+                    <path d="M170,85 C140,130 110,140 85,140" stroke-width="3"/>
+                    <path d="M220,85 C180,140 150,170 105,170" stroke-width="3"/>
+                    <g stroke-width="2.5">
+                        <path d="M125,115 L70,30 L150,60 L140,75 L95,50" />
+                        <path d="M115,125 L55,45 L140,80 L130,95 L80,65" />
+                        <path d="M105,135 L45,65 L130,105 L120,120 L70,85" />
+                    </g>
+                    <g stroke-width="2.5">
+                        <path d="M85,140 L10,140 L10,155 L75,155" />
+                        <path d="M75,155 L5,155 L5,170 L65,170" />
+                        <path d="M65,170 L5,170 L5,185 L105,185" />
+                    </g>
+                    <path d="M105,170 C90,170 85,185 105,185" stroke-width="3"/>
+                    <g stroke-width="2">
+                        <path d="M35,140 L30,147 L35,155" />
+                        <path d="M55,140 L50,147 L55,155" />
+                        <path d="M30,155 L25,162 L30,170" />
+                        <path d="M50,155 L45,162 L50,170" />
+                        <path d="M25,170 L20,177 L25,185" />
+                        <path d="M45,170 L40,177 L45,185" />
+                    </g>
+                    <g stroke-width="2.5">
+                        <path d="M100,170 L70,195 L95,195 L105,185" />
+                        <path d="M80,195 L65,200" />
+                    </g>
+                </svg>
+                <div id="logo-text" class="text-white hidden sm:flex items-baseline gap-2 group-hover:text-primary transition-colors duration-300">
+                    <span class="font-script text-4xl md:text-5xl font-bold leading-none">Việt</span>
+                    <span class="font-serif text-xl md:text-2xl italic font-medium tracking-wide">Họa Ký</span>
+                </div>
+            </div>
+            
+            <!-- Desktop Menu -->
+            <div id="desktop-menu" class="hidden md:flex gap-6 lg:gap-10 text-[10px] lg:text-xs font-bold tracking-[0.2em] uppercase text-white transition-colors duration-300">
+                <button onclick="navigate('home')" class="hover:text-primary transition-colors">Trang chủ</button>
+                <button onclick="scrollToSection('gallery')" class="hover:text-primary transition-colors">Bộ sưu tập</button>
+                <button onclick="navigate('team')" class="hover:text-primary transition-colors">Về chúng tôi</button>
+                <button onclick="navigate('feedback')" class="hover:text-primary transition-colors">Phản hồi</button>
+                <button onclick="scrollToSection('footer')" class="hover:text-primary transition-colors">Liên hệ</button>
+            </div>
+
+            <!-- Mobile Menu Toggle -->
+            <button id="mobile-menu-btn" class="md:hidden text-white transition-colors duration-300">
+                <i data-lucide="menu" id="menu-icon" class="w-7 h-7"></i>
+            </button>
+        </div>
+
+        <!-- Mobile Menu Dropdown -->
+        <div id="mobile-menu" class="md:hidden absolute top-full left-0 w-full bg-white shadow-xl transition-all duration-300 overflow-hidden max-h-0">
+            <div class="py-4 px-6 flex flex-col gap-4 text-dark">
+                <button onclick="navigate('home')" class="text-left font-serif text-lg py-2 border-b border-gray-100">Trang chủ</button>
+                <button onclick="scrollToSection('gallery')" class="text-left font-serif text-lg py-2 border-b border-gray-100">Bộ sưu tập</button>
+                <button onclick="navigate('team')" class="text-left font-serif text-lg py-2 border-b border-gray-100">Về chúng tôi (About Us)</button>
+                <button onclick="navigate('feedback')" class="text-left font-serif text-lg py-2 border-b border-gray-100">Phản hồi (Feedback)</button>
+                <button onclick="scrollToSection('footer')" class="text-left font-serif text-lg py-2">Liên hệ</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- TRANG CHỦ (HOME VIEW) -->
+    <main id="home-view" class="view-section active">
+        <!-- Hero Section Parallax & Zoom -->
+        <section class="relative h-screen min-h-[700px] flex items-center justify-center overflow-hidden">
+            <div id="hero-bg" class="absolute inset-0 bg-cover bg-center bg-no-repeat will-change-transform origin-center" style="background-image: url('./Pic1.jpg')"></div>
+            <div class="absolute inset-0 bg-gradient-to-b from-black/70 via-black/40 to-black/80 z-0"></div>
+
+            <div class="relative z-10 text-center px-6 max-w-5xl mx-auto flex flex-col items-center mt-16">
+                <span class="reveal text-secondary tracking-[0.4em] text-xs md:text-sm font-semibold mb-6 block uppercase" style="transition-delay: 200ms;">Di Sản Cội Nguồn</span>
+                <h1 class="reveal text-5xl md:text-7xl lg:text-8xl text-white mb-8 leading-tight flex items-baseline justify-center gap-4 md:gap-6" style="transition-delay: 400ms;">
+                    <span class="font-script text-7xl md:text-9xl text-secondary">Việt</span>
+                    <span class="font-serif italic text-4xl md:text-6xl lg:text-7xl font-light tracking-wider opacity-90">Họa Ký</span>
+                </h1>
+                <p class="reveal text-lg md:text-2xl text-accent font-serif italic max-w-3xl mx-auto mb-12 leading-relaxed" style="transition-delay: 600ms;">
+                    "Nối mạch nghìn năm khơi màu di sản <br class="hidden md:block"/> Nơi những nét kẻ vẽ câu truyện văn hóa Việt."
+                </p>
+                <button onclick="scrollToSection('gallery')" class="reveal bg-transparent border border-white text-white px-10 py-4 uppercase tracking-[0.2em] text-xs hover:bg-white hover:text-black transition-all duration-500" style="transition-delay: 800ms;">Khám phá ngay</button>
+            </div>
+
+            <!-- Scroll Indicator -->
+            <div class="absolute bottom-10 left-1/2 transform -translate-x-1/2 animate-bounce text-white/50 z-10">
+                <div class="w-[1px] h-16 bg-gradient-to-b from-white to-transparent mx-auto"></div>
+            </div>
+        </section>
+
+        <!-- Intro Section -->
+        <section class="py-32 px-6 bg-white text-center">
+            <div class="max-w-3xl mx-auto reveal">
+                <h2 class="text-3xl md:text-4xl font-serif text-dark mb-8 leading-relaxed">"Mỗi bức tranh dân gian không chỉ là nghệ thuật, mà là một cuốn biên niên sử bằng hình ảnh của dân tộc."</h2>
+                <div class="w-12 h-[2px] bg-primary mx-auto mb-8"></div>
+                <p class="text-gray-500 leading-loose">Từ chốn cung đình đến miền quê dân dã, từ bức tranh treo tường ngày Tết đến pháp khí chốn linh thiêng. Dự án này là lời tri ân gửi đến những nghệ nhân thầm lặng đang gìn giữ hồn cốt của đất nước.</p>
+            </div>
+        </section>
+
+        <!-- Gallery Section -->
+        <section id="gallery" class="py-24 bg-light">
+            <div class="max-w-[90rem] mx-auto px-6 md:px-12">
+                <div class="reveal flex flex-col md:flex-row justify-between items-end mb-16 gap-6 border-b border-gray-200 pb-8">
+                    <div>
+                        <span class="text-primary uppercase tracking-[0.2em] text-xs font-bold block mb-3">Bộ sưu tập</span>
+                        <h2 class="text-4xl md:text-5xl font-serif text-dark">Các Dòng Tranh</h2>
+                    </div>
+                    <p class="text-gray-500 max-w-md text-sm md:text-base leading-relaxed text-left md:text-right">Trải nghiệm sự phong phú của nghệ thuật dân gian qua các vùng miền văn hóa khác nhau.</p>
+                </div>
+
+                <!-- Lưới danh sách tranh -->
+                <div id="gallery-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-y-20 gap-x-12">
+                    <!-- Javascript injects cards here -->
+                </div>
+            </div>
+        </section>
+
+        <!-- LỢI ÍCH DỰ ÁN -->
+        <section id="benefits" class="py-24 bg-[#Fdfbf7] border-t border-gray-100">
+            <div class="max-w-7xl mx-auto px-6 md:px-12">
+                <div class="text-center mb-16 reveal">
+                    <span class="text-secondary font-bold tracking-[0.3em] uppercase text-xs mb-4 block">Sứ Mệnh</span>
+                    <h2 class="text-4xl md:text-5xl font-serif text-dark mb-6">Giá Trị Của Website</h2>
+                    <div class="w-16 h-[2px] bg-primary mx-auto mb-8"></div>
+                    <p class="text-gray-500 max-w-2xl mx-auto">Chúng tôi tạo ra Việt Họa Ký với mong muốn mang lại những giá trị thiết thực trong việc bảo tồn và phát triển nghệ thuật dân gian.</p>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <!-- Value 1 -->
+                    <div class="bg-white p-8 shadow-sm border border-gray-100 hover:shadow-xl hover:-translate-y-2 transition-all duration-500 text-center rounded-sm reveal">
+                        <div class="w-16 h-16 mx-auto bg-light rounded-full flex items-center justify-center mb-6 text-primary shadow-inner">
+                            <i data-lucide="paintbrush" class="w-8 h-8"></i>
+                        </div>
+                        <h3 class="font-serif text-xl text-dark mb-4">Tôn Vinh Nghệ Nhân</h3>
+                        <p class="text-gray-500 text-sm leading-relaxed">
+                            Đưa những tác phẩm truyền thống vượt ra khỏi không gian làng nghề, đến gần hơn với công chúng hiện đại. Ghi nhận công sức thầm lặng của những người giữ lửa.
+                        </p>
+                    </div>
+
+                    <!-- Value 2 -->
+                    <div class="bg-white p-8 shadow-sm border border-gray-100 hover:shadow-xl hover:-translate-y-2 transition-all duration-500 text-center rounded-sm reveal" style="transition-delay: 150ms;">
+                        <div class="w-16 h-16 mx-auto bg-light rounded-full flex items-center justify-center mb-6 text-secondary shadow-inner">
+                            <i data-lucide="book-open" class="w-8 h-8"></i>
+                        </div>
+                        <h3 class="font-serif text-xl text-dark mb-4">Giáo Dục & Tiếp Cận</h3>
+                        <p class="text-gray-500 text-sm leading-relaxed">
+                            Trở thành kho tư liệu sống động cho học sinh, sinh viên và giới trẻ. Giúp họ dễ dàng tiếp cận và hiểu được chiều sâu văn hóa ẩn sau từng đường nét dân gian.
+                        </p>
+                    </div>
+
+                    <!-- Value 3 -->
+                    <div class="bg-white p-8 shadow-sm border border-gray-100 hover:shadow-xl hover:-translate-y-2 transition-all duration-500 text-center rounded-sm reveal" style="transition-delay: 300ms;">
+                        <div class="w-16 h-16 mx-auto bg-light rounded-full flex items-center justify-center mb-6 text-primary shadow-inner">
+                            <i data-lucide="globe" class="w-8 h-8"></i>
+                        </div>
+                        <h3 class="font-serif text-xl text-dark mb-4">Lan Tỏa Di Sản</h3>
+                        <p class="text-gray-500 text-sm leading-relaxed">
+                            Mở ra một "cánh cửa" trực tuyến, đưa nghệ thuật tranh dân gian Việt Nam vượt qua rào cản địa lý để tiếp cận với những người yêu nghệ thuật trong và ngoài nước.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Artistic GIF Section (Coming Soon) -->
+        <section class="py-24 bg-white relative overflow-hidden border-t border-gray-100">
+            <div class="max-w-7xl mx-auto px-6 md:px-12 flex flex-col md:flex-row items-center gap-12 md:gap-20 reveal">
+                <!-- Text Content -->
+                <div class="w-full md:w-5/12 text-center md:text-left">
+                    <span class="text-secondary font-bold tracking-[0.3em] uppercase text-xs mb-4 block">Coming Soon</span>
+                    <h2 class="text-4xl md:text-5xl font-serif text-dark mb-6 leading-tight">
+                        Chuyên mục sắp ra mắt
+                    </h2>
+                    <div class="w-16 h-[2px] bg-primary mx-auto md:mx-0 mb-8"></div>
+                    <p class="text-gray-500 leading-loose mb-8 text-justify">
+                        Việt Họa Ký đang trong quá trình hoàn thiện và sẽ sớm cập nhật thêm nhiều chuyên đề hấp dẫn. Hãy cùng đón chờ những nội dung mới nhất về kỹ thuật chế tác, những câu chuyện chưa kể phía sau mỗi bức tranh và những góc nhìn sâu sắc về nghệ thuật dân gian Việt Nam.
+                    </p>
+                </div>
+                
+                <!-- GIF Image Container -->
+                <div class="w-full md:w-7/12 relative group mt-8 md:mt-0">
+                    <div class="absolute -top-6 -left-6 w-32 h-32 border-t-4 border-l-4 border-primary transition-all duration-700 ease-out group-hover:-top-8 group-hover:-left-8 opacity-70"></div>
+                    <div class="absolute -bottom-6 -right-6 w-32 h-32 border-b-4 border-r-4 border-secondary transition-all duration-700 ease-out group-hover:-bottom-8 group-hover:-right-8 opacity-70"></div>
+                    
+                    <div class="relative shadow-2xl overflow-hidden bg-light p-3 md:p-4 z-10 transform transition-transform duration-700 group-hover:scale-[1.02]">
+                        <div class="absolute inset-0 bg-black/40 z-20 flex items-center justify-center transition-opacity duration-500 group-hover:opacity-0 backdrop-blur-[2px]">
+                            <span class="text-white font-script text-4xl md:text-5xl drop-shadow-md">Sắp ra mắt...</span>
+                        </div>
+                        <img src="./c8b0c8_11931c54023646958926a2faa248ac6d~mv2.gif" alt="Nội dung sắp ra mắt" class="w-full h-auto object-cover saturate-105" />
+                    </div>
+                    
+                    <!-- Chấm trang trí -->
+                    <div class="absolute top-1/2 -right-12 transform -translate-y-1/2 hidden lg:flex flex-col gap-3">
+                        <span class="w-2 h-2 rounded-full bg-secondary"></span>
+                        <span class="w-2 h-2 rounded-full bg-secondary opacity-50"></span>
+                        <span class="w-2 h-2 rounded-full bg-secondary opacity-20"></span>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- TRANG CHI TIẾT (DETAIL VIEW) -->
+    <main id="detail-view" class="view-section bg-light min-h-screen">
+        <button onclick="navigate('home')" class="fixed top-28 left-4 md:left-12 z-50 bg-white/90 backdrop-blur text-dark p-4 rounded-full shadow-lg hover:shadow-xl hover:-translate-x-1 hover:text-primary transition-all duration-300 flex items-center justify-center border border-gray-100" title="Quay lại">
+            <i data-lucide="chevron-left" class="w-5 h-5"></i>
+        </button>
+
+        <!-- Chi tiết Cover Parallax -->
+        <div id="detail-cover" class="relative h-[60vh] md:h-[75vh] w-full bg-fixed bg-center bg-cover">
+            <div class="absolute inset-0 bg-black/50"></div>
+        </div>
+
+        <!-- Overlap Content Box -->
+        <div class="relative z-20 max-w-5xl mx-auto px-4 md:px-8 -mt-32 md:-mt-48 mb-24">
+            <div class="bg-white shadow-2xl p-8 md:p-16 lg:p-24">
+                
+                <div class="reveal text-center mb-16">
+                    <span id="detail-location" class="text-primary font-bold tracking-[0.3em] uppercase text-xs mb-4 block"></span>
+                    <h1 id="detail-title" class="text-4xl md:text-5xl lg:text-6xl font-serif text-dark mb-8"></h1>
+                    <div class="w-16 h-[2px] bg-secondary mx-auto"></div>
+                </div>
+
+                <div class="reveal text-lg md:text-2xl text-[#5a5043] font-serif italic text-center mb-24 leading-relaxed px-4 md:px-12 relative" style="transition-delay: 200ms;">
+                    <span class="text-6xl text-accent absolute -top-6 left-0 md:left-4 font-serif leading-none">"</span>
+                    <span id="detail-quote"></span>
+                </div>
+
+                <!-- Sections container -->
+                <div id="detail-sections" class="space-y-24 md:space-y-32"></div>
+
+                <div class="reveal mt-32 pt-16 border-t border-gray-100 flex justify-center">
+                    <button onclick="navigate('home')" class="group flex items-center gap-4 text-dark uppercase tracking-[0.2em] text-xs font-bold hover:text-primary transition-colors">
+                        <span class="w-8 h-px bg-gray-300 group-hover:bg-primary transition-colors"></span>
+                        Trở lại bộ sưu tập
+                        <span class="w-8 h-px bg-gray-300 group-hover:bg-primary transition-colors"></span>
+                    </button>
+                </div>
+                
+            </div>
+        </div>
+    </main>
+
+    <!-- TRANG ĐỘI NGŨ (TEAM VIEW) -->
+    <main id="team-view" class="view-section bg-light min-h-screen pt-32 pb-24">
+        <button onclick="navigate('home')" class="fixed top-28 left-4 md:left-12 z-50 bg-white/90 backdrop-blur text-dark p-4 rounded-full shadow-lg hover:shadow-xl hover:-translate-x-1 hover:text-primary transition-all duration-300 flex items-center justify-center border border-gray-100" title="Quay lại">
+            <i data-lucide="chevron-left" class="w-5 h-5"></i>
+        </button>
+
+        <div class="max-w-7xl mx-auto px-6 md:px-12">
+            <div class="text-center mb-16 reveal">
+                <span class="text-primary font-bold tracking-[0.3em] uppercase text-xs mb-4 block">Những người kiến tạo</span>
+                <h1 class="text-4xl md:text-5xl lg:text-6xl font-serif text-dark mb-8">Về Chúng Tôi</h1>
+                <div class="w-24 h-[2px] bg-secondary mx-auto"></div>
+                <p class="text-gray-500 mt-6 max-w-2xl mx-auto">Cùng chung tay lan tỏa vẻ đẹp của nghệ thuật tranh dân gian đến với cộng đồng.</p>
+            </div>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+                <!-- Member 1 -->
+                <div class="bg-white shadow-md p-6 text-center group reveal hover:-translate-y-2 transition-transform duration-300 rounded-sm">
+                    <div class="w-32 h-32 mx-auto rounded-full overflow-hidden border-4 border-accent group-hover:border-secondary transition-colors mb-4">
+                        <img src="./thanh_vien_1.jpg" alt="Thành viên 1" class="w-full h-full object-cover">
+                    </div>
+                    <h3 class="font-serif text-xl text-dark mb-1">Trần Thị Ngần</h3>
+                    <p class="text-gray-500 text-sm mb-3">Nhóm Trưởng</p>
+                    <a href="tel:+84123456789" class="inline-flex items-center gap-2 text-primary text-sm font-semibold hover:text-dark transition-colors">
+                        <i data-lucide="phone" class="w-4 h-4"></i> 0357 872 881
+                    </a>
+                </div>
+                <!-- Member 2 -->
+                <div class="bg-white shadow-md p-6 text-center group reveal hover:-translate-y-2 transition-transform duration-300 rounded-sm" style="transition-delay: 100ms;">
+                    <div class="w-32 h-32 mx-auto rounded-full overflow-hidden border-4 border-accent group-hover:border-secondary transition-colors mb-4">
+                        <img src="./thanh_vien_2.jpg" alt="Thành viên 2" class="w-full h-full object-cover">
+                    </div>
+                    <h3 class="font-serif text-xl text-dark mb-1">Bùi Thị Bích Ngọc</h3>
+                    <p class="text-gray-500 text-sm mb-3">Thành Viên</p>
+                    <a href="tel:+84123456789" class="inline-flex items-center gap-2 text-primary text-sm font-semibold hover:text-dark transition-colors">
+                        <i data-lucide="phone" class="w-4 h-4"></i> 0379 449 345
+                    </a>
+                </div>
+                <!-- Member 3 -->
+                <div class="bg-white shadow-md p-6 text-center group reveal hover:-translate-y-2 transition-transform duration-300 rounded-sm" style="transition-delay: 200ms;">
+                    <div class="w-32 h-32 mx-auto rounded-full overflow-hidden border-4 border-accent group-hover:border-secondary transition-colors mb-4">
+                        <img src="./thanh_vien_3.jpg" alt="Thành viên 3" class="w-full h-full object-cover">
+                    </div>
+                    <h3 class="font-serif text-xl text-dark mb-1">Nguyễn Huyền Gia Nghi</h3>
+                    <p class="text-gray-500 text-sm mb-3">Thành Viên</p>
+                    <a href="tel:+84123456789" class="inline-flex items-center gap-2 text-primary text-sm font-semibold hover:text-dark transition-colors">
+                        <i data-lucide="phone" class="w-4 h-4"></i> 0838 086 886
+                    </a>
+                </div>
+                <!-- Member 4 -->
+                <div class="bg-white shadow-md p-6 text-center group reveal hover:-translate-y-2 transition-transform duration-300 rounded-sm" style="transition-delay: 300ms;">
+                    <div class="w-32 h-32 mx-auto rounded-full overflow-hidden border-4 border-accent group-hover:border-secondary transition-colors mb-4">
+                        <img src="./thanh_vien_4.jpg" alt="Thành viên 4" class="w-full h-full object-cover">
+                    </div>
+                    <h3 class="font-serif text-xl text-dark mb-1">Nguyễn Thị Ngoan</h3>
+                    <p class="text-gray-500 text-sm mb-3">Thành Viên</p>
+                    <a href="tel:+84123456789" class="inline-flex items-center gap-2 text-primary text-sm font-semibold hover:text-dark transition-colors">
+                        <i data-lucide="phone" class="w-4 h-4"></i> 0961 884 899
+                    </a>
+                </div>
+                <!-- Member 5 -->
+                <div class="bg-white shadow-md p-6 text-center group reveal hover:-translate-y-2 transition-transform duration-300 rounded-sm" style="transition-delay: 400ms;">
+                    <div class="w-32 h-32 mx-auto rounded-full overflow-hidden border-4 border-accent group-hover:border-secondary transition-colors mb-4">
+                        <img src="./thanh_vien_5.jpg" alt="Thành viên 5" class="w-full h-full object-cover">
+                    </div>
+                    <h3 class="font-serif text-xl text-dark mb-1">Trần Ngọc Bảo Ngân</h3>
+                    <p class="text-gray-500 text-sm mb-3">Thành Viên</p>
+                    <a href="tel:+84123456789" class="inline-flex items-center gap-2 text-primary text-sm font-semibold hover:text-dark transition-colors">
+                        <i data-lucide="phone" class="w-4 h-4"></i> 0446 553 681
+                    </a>
+                </div>
+                <!-- Member 6 -->
+                <div class="bg-white shadow-md p-6 text-center group reveal hover:-translate-y-2 transition-transform duration-300 rounded-sm" style="transition-delay: 500ms;">
+                    <div class="w-32 h-32 mx-auto rounded-full overflow-hidden border-4 border-accent group-hover:border-secondary transition-colors mb-4">
+                        <img src="./thanh_vien_6.jpg" alt="Thành viên 6" class="w-full h-full object-cover">
+                    </div>
+                    <h3 class="font-serif text-xl text-dark mb-1">Trinh Trần Bối Nghi</h3>
+                    <p class="text-gray-500 text-sm mb-3">Thành Viên</p>
+                    <a href="tel:+84123456789" class="inline-flex items-center gap-2 text-primary text-sm font-semibold hover:text-dark transition-colors">
+                        <i data-lucide="phone" class="w-4 h-4"></i> 0924 323 881
+                    </a>
+                </div>
+                <!-- Member 7 -->
+                <div class="bg-white shadow-md p-6 text-center group reveal hover:-translate-y-2 transition-transform duration-300 rounded-sm" style="transition-delay: 600ms;">
+                    <div class="w-32 h-32 mx-auto rounded-full overflow-hidden border-4 border-accent group-hover:border-secondary transition-colors mb-4">
+                        <img src="./thanh_vien_7.jpg" alt="Thành viên 7" class="w-full h-full object-cover">
+                    </div>
+                    <h3 class="font-serif text-xl text-dark mb-1">Vũ Kim Ngân</h3>
+                    <p class="text-gray-500 text-sm mb-3">Thành Viên</p>
+                    <a href="tel:+84123456789" class="inline-flex items-center gap-2 text-primary text-sm font-semibold hover:text-dark transition-colors">
+                        <i data-lucide="phone" class="w-4 h-4"></i> 0286 539 992
+                    </a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- TRANG PHẢN HỒI (FEEDBACK VIEW) -->
+    <main id="feedback-view" class="view-section bg-light min-h-screen pt-32 pb-24">
+        <button onclick="navigate('home')" class="fixed top-28 left-4 md:left-12 z-50 bg-white/90 backdrop-blur text-dark p-4 rounded-full shadow-lg hover:shadow-xl hover:-translate-x-1 hover:text-primary transition-all duration-300 flex items-center justify-center border border-gray-100" title="Quay lại">
+            <i data-lucide="chevron-left" class="w-5 h-5"></i>
+        </button>
+
+        <div class="max-w-7xl mx-auto px-6 md:px-12">
+            <!-- Tiêu đề -->
+            <div class="text-center mb-16 reveal">
+                <span class="text-primary font-bold tracking-[0.3em] uppercase text-xs mb-4 block">Lắng nghe</span>
+                <h1 class="text-4xl md:text-5xl lg:text-6xl font-serif text-dark mb-8">Góc Phản Hồi</h1>
+                <div class="w-24 h-[2px] bg-secondary mx-auto"></div>
+                <p class="text-gray-500 mt-6 max-w-2xl mx-auto">Những tình cảm và ý kiến đóng góp của quý vị là động lực để Việt Họa Ký tiếp tục hoàn thiện hành trình lưu giữ văn hóa.</p>
+            </div>
+            
+            <!-- Danh sách Feedback -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-24">
+                <!-- Feedback 1 -->
+                <div class="bg-white p-8 shadow-sm border border-gray-100 rounded-sm reveal hover:-translate-y-2 transition-transform duration-300 relative">
+                    <i data-lucide="quote" class="w-10 h-10 text-accent absolute top-6 right-6 opacity-30"></i>
+                    <p class="text-gray-600 leading-relaxed mb-6 italic">"Trang web thực sự rất đẹp và ý nghĩa. Nhờ Việt Họa Ký mà tôi đã hiểu thêm rất nhiều về nguồn gốc của dòng tranh Hàng Trống. Giao diện trực quan và dễ sử dụng!"</p>
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-full overflow-hidden border-2 border-secondary">
+                            <img src="./feedback_1.jpg" alt="" class="w-full h-full object-cover bg-gray-200">
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-dark text-sm">Nguyễn Mai Anh</h4>
+                            <p class="text-xs text-gray-500">Giáo viên Mỹ Thuật</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Feedback 2 -->
+                <div class="bg-white p-8 shadow-sm border border-gray-100 rounded-sm reveal hover:-translate-y-2 transition-transform duration-300 relative" style="transition-delay: 150ms;">
+                    <i data-lucide="quote" class="w-10 h-10 text-accent absolute top-6 right-6 opacity-30"></i>
+                    <p class="text-gray-600 leading-relaxed mb-6 italic">"Một dự án rất thiết thực để bảo tồn văn hóa dân tộc. Tôi đặc biệt thích phần tìm hiểu về Tranh Làng Sình. Cảm ơn đội ngũ đã thực hiện dự án này."</p>
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-full overflow-hidden border-2 border-secondary">
+                            <img src="./feedback_2.jpg" alt="" class="w-full h-full object-cover bg-gray-200">
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-dark text-sm">Trần Lê Đăng</h4>
+                            <p class="text-xs text-gray-500">Sinh viên Kiến Trúc</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Feedback 3 -->
+                <div class="bg-white p-8 shadow-sm border border-gray-100 rounded-sm reveal hover:-translate-y-2 transition-transform duration-300 relative" style="transition-delay: 300ms;">
+                    <i data-lucide="quote" class="w-10 h-10 text-accent absolute top-6 right-6 opacity-30"></i>
+                    <p class="text-gray-600 leading-relaxed mb-6 italic">"Trang web giúp mình có cái nhìn rất sâu về tranh Đông Hồ mà ngày xưa chỉ thấy qua sách vở. Chúc dự án Việt Họa Ký ngày càng thành công và lan rộng!"</p>
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-full overflow-hidden border-2 border-secondary">
+                            <img src="./feedback_3.jpg" alt="" class="w-full h-full object-cover bg-gray-200">
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-dark text-sm">Hoàng Yến</h4>
+                            <p class="text-xs text-gray-500">Người yêu nghệ thuật</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Form Gửi Phản Hồi -->
+            <div class="max-w-3xl mx-auto bg-white p-8 md:p-12 shadow-xl border-t-4 border-primary rounded-sm reveal">
+                <h2 class="font-serif text-2xl md:text-3xl text-dark mb-6 text-center">Gửi Ý Kiến Của Bạn</h2>
+                <p class="text-center text-gray-500 mb-10 text-sm">Việt Họa Ký luôn trân trọng và lắng nghe mọi ý kiến đóng góp từ bạn để phát triển nội dung tốt hơn.</p>
+                
+                <form onsubmit="event.preventDefault(); alert('Cảm ơn bạn đã gửi phản hồi!');" class="space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-xs font-bold tracking-widest uppercase text-gray-500 mb-2">Tên của bạn *</label>
+                            <input type="text" class="w-full border-b border-gray-300 py-3 focus:outline-none focus:border-primary transition-colors bg-transparent" required>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold tracking-widest uppercase text-gray-500 mb-2">Số điện thoại *</label>
+                            <input type="tel" class="w-full border-b border-gray-300 py-3 focus:outline-none focus:border-primary transition-colors bg-transparent" required>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold tracking-widest uppercase text-gray-500 mb-2">Email *</label>
+                        <input type="email" class="w-full border-b border-gray-300 py-3 focus:outline-none focus:border-primary transition-colors bg-transparent" required>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold tracking-widest uppercase text-gray-500 mb-2">Ý kiến của bạn *</label>
+                        <textarea rows="4" class="w-full border-b border-gray-300 py-3 focus:outline-none focus:border-primary transition-colors bg-transparent resize-none" required></textarea>
+                    </div>
+                    <div class="text-center pt-4">
+                        <button type="submit" class="bg-primary text-white px-10 py-4 uppercase tracking-[0.2em] text-xs font-bold hover:bg-dark transition-colors rounded-sm shadow-md hover:shadow-lg">Gửi Phản Hồi</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer chứa Thông tin Liên hệ (Dưới cùng) -->
+    <footer id="footer" class="bg-[#1a1816] text-accent py-24 relative">
+        <div class="max-w-4xl mx-auto px-6 text-center reveal">
+            <h2 class="font-serif text-3xl md:text-4xl text-white mb-6">Liên Hệ Với Chúng Tôi</h2>
+            <div class="w-12 h-1 bg-secondary mx-auto mb-10"></div>
+            
+            <p class="opacity-70 text-sm md:text-base mb-12 leading-loose max-w-2xl mx-auto">
+                Bạn muốn tìm hiểu thêm về dự án, đóng góp thông tin về các dòng tranh dân gian, hoặc hợp tác cùng Việt Họa Ký? Hãy liên hệ với chúng tôi qua thông tin bên dưới hoặc các kênh mạng xã hội.
+            </p>
+            
+            <!-- Thông tin liên hệ dạng Icon Box -->
+            <div class="flex flex-col md:flex-row justify-center items-center md:items-start gap-8 md:gap-16 mb-16 opacity-90 text-sm">
+                <div class="flex flex-col items-center gap-3">
+                    <div class="w-12 h-12 rounded-full border border-gray-600 flex items-center justify-center text-secondary mb-2">
+                        <i data-lucide="map-pin" class="w-5 h-5"></i>
+                    </div>
+                    <span class="max-w-[200px] leading-relaxed">Số 2 Phạm Văn Đồng, Cầu Giấy, Hà Nội</span>
+                </div>
+                <div class="flex flex-col items-center gap-3">
+                    <div class="w-12 h-12 rounded-full border border-gray-600 flex items-center justify-center text-secondary mb-2">
+                        <i data-lucide="mail" class="w-5 h-5"></i>
+                    </div>
+                    <span>contact@viethoaky.vn</span>
+                </div>
+                <div class="flex flex-col items-center gap-3">
+                    <div class="w-12 h-12 rounded-full border border-gray-600 flex items-center justify-center text-secondary mb-2">
+                        <i data-lucide="phone" class="w-5 h-5"></i>
+                    </div>
+                    <span>+84 123 456 789</span>
+                </div>
+            </div>
+
+            <!-- Form Liên hệ Footer Căn Giữa -->
+            <div class="max-w-2xl mx-auto bg-white/5 p-8 md:p-12 rounded-sm border border-white/10 mb-16">
+                <form onsubmit="event.preventDefault(); alert('Cảm ơn bạn đã liên hệ! Chúng tôi sẽ phản hồi sớm nhất.');">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8">
+                        <input type="text" placeholder="Tên của bạn" class="input-field" required>
+                        <input type="tel" placeholder="Số điện thoại" class="input-field" required>
+                    </div>
+                    <input type="email" placeholder="Email" class="input-field" required>
+                    <button type="submit" class="bg-transparent border border-white text-white px-12 py-4 uppercase tracking-widest text-xs font-bold hover:bg-white hover:text-dark transition-colors mt-6">Gửi Tin Nhắn Ngay</button>
+                </form>
+            </div>
+
+            <!-- Footer Bottom: Logo & Copyright -->
+            <div class="border-t border-gray-800 pt-16 text-center">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 200" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" class="w-20 h-10 mx-auto text-secondary mb-6 opacity-80">
+                    <path d="M220,70 Q300,75 380,85 Q280,95 220,85 Z" stroke-width="3"/>
+                    <path d="M220,78 L360,85" stroke-width="2"/>
+                    <path d="M220,70 L180,60 L170,85 L220,85" stroke-width="3"/>
+                    <circle cx="205" cy="74" r="2" fill="currentColor"/>
+                    <circle cx="205" cy="74" r="6" stroke-width="2"/>
+                    <path d="M180,60 L125,50 L135,65" stroke-width="2.5"/>
+                    <path d="M175,70 L115,65 L125,78" stroke-width="2.5"/>
+                    <path d="M170,80 L110,80 L120,90" stroke-width="2.5"/>
+                    <path d="M170,85 C140,130 110,140 85,140" stroke-width="3"/>
+                    <path d="M220,85 C180,140 150,170 105,170" stroke-width="3"/>
+                    <g stroke-width="2.5">
+                        <path d="M125,115 L70,30 L150,60 L140,75 L95,50" />
+                        <path d="M115,125 L55,45 L140,80 L130,95 L80,65" />
+                        <path d="M105,135 L45,65 L130,105 L120,120 L70,85" />
+                    </g>
+                    <g stroke-width="2.5">
+                        <path d="M85,140 L10,140 L10,155 L75,155" />
+                        <path d="M75,155 L5,155 L5,170 L65,170" />
+                        <path d="M65,170 L5,170 L5,185 L105,185" />
+                    </g>
+                    <path d="M105,170 C90,170 85,185 105,185" stroke-width="3"/>
+                    <g stroke-width="2">
+                        <path d="M35,140 L30,147 L35,155" />
+                        <path d="M55,140 L50,147 L55,155" />
+                        <path d="M30,155 L25,162 L30,170" />
+                        <path d="M50,155 L45,162 L50,170" />
+                        <path d="M25,170 L20,177 L25,185" />
+                        <path d="M45,170 L40,177 L45,185" />
+                    </g>
+                    <g stroke-width="2.5">
+                        <path d="M100,170 L70,195 L95,195 L105,185" />
+                        <path d="M80,195 L65,200" />
+                    </g>
+                </svg>
+
+                <!-- Link Mạng Xã Hội -->
+                <div class="flex justify-center gap-6 mb-8 mt-6">
+                    <a href="https://www.facebook.com/profile.php?id=100078949726147&sk=photos" target="_blank" class="w-12 h-12 rounded-full border border-gray-600 flex items-center justify-center text-gray-400 hover:text-white hover:border-[#1877F2] hover:bg-[#1877F2] transition-all shadow-md group">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="none" class="group-hover:scale-110 transition-transform">
+                            <path d="M12 2.04c-5.5 0-10 4.49-10 10.02 0 5 3.66 9.15 8.44 9.9v-7H7.9v-2.9h2.54V9.85c0-2.51 1.49-3.89 3.78-3.89 1.09 0 2.23.19 2.23.19v2.47h-1.26c-1.24 0-1.63.77-1.63 1.56v1.88h2.78l-.45 2.9h-2.33v7a10 10 0 0 0 8.44-9.9c0-5.53-4.5-10.02-10-10.02Z"/>
+                        </svg>
+                    </a>
+                    <a href="https://www.instagram.com/tranh_.viet?igsh=anQxd2c5ZWIwaDFu&utm_source=qr" target="_blank" class="w-12 h-12 rounded-full border border-gray-600 flex items-center justify-center text-gray-400 hover:text-white hover:border-transparent hover:bg-gradient-to-tr hover:from-[#f09433] hover:via-[#e6683c] hover:to-[#bc1888] transition-all shadow-md group relative overflow-hidden">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="group-hover:scale-110 transition-transform relative z-10">
+                            <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                            <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                            <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+                        </svg>
+                    </a>
+                </div>
+
+                <p class="text-xs opacity-40 tracking-[0.2em] uppercase">© Việt Họa Ký.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // --- KHỞI TẠO LENIS SMOOTH SCROLL ---
+        const lenis = new Lenis({
+            duration: 1.2,
+            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), 
+            direction: 'vertical',
+            gestureDirection: 'vertical',
+            smooth: true,
+            mouseMultiplier: 1,
+            smoothTouch: false,
+            touchMultiplier: 2,
+            infinite: false,
+        });
+
+        function raf(time) {
+            lenis.raf(time);
+            requestAnimationFrame(raf);
+        }
+        requestAnimationFrame(raf);
+
+        // 1. DỮ LIỆU TỪ GOOGLE DOC
+        const craftsData = [
+            {
+                id: "dong-ho", title: "Làng Tranh Đông Hồ", location: "Bắc Ninh",
+                quote: "Có những thanh âm không vang lên từ nhạc cụ mà cất lên từ nhịp sống của một làng nghề truyền thống: tiếng quét giấy điệp, tiếng in ván gỗ và tiếng trò chuyện của những người nghệ nhân bên bàn làm tranh. Trải qua nhiều thế kỷ, làng tranh Đông Hồ vẫn âm thầm gìn giữ một dòng tranh dân gian độc đáo, nơi vẻ đẹp bản địa và tinh thần văn hóa Việt được lưu giữ qua từng nét chạm.",
+                img: "./dong_ho_cover.jpg",
+                coverImg: "./dong_ho_cover.jpg",
+                sections: [
+                    { heading: "Giới thiệu chung", content: [
+                        "Làng tranh Đông Hồ nằm ở làng Đông Hồ, xã Song Hồ, huyện Thuận Thành, tỉnh Bắc Ninh, bên bờ sông Đuống. Trong văn hóa dân gian Việt Nam, tranh Đông Hồ đã đi vào nếp sống và trở thành một phần quen thuộc trong đời sống tinh thần của người dân, đặc biệt vào dịp Tết Nguyên Đán. Những bức tranh với màu sắc mộc mạc, nội dung gần gũi thường được người dân mua về treo trong nhà như một lời cầu chúc cho năm mới may mắn, sung túc và hạnh phúc.",
+                        "<img src='./dong_ho_1.jpg' alt='' class='w-full h-auto object-cover rounded-sm shadow-md my-6'>"
+                    ] },
+                    { heading: "Lịch sử", content: [
+                        "Theo lời kể của người dân làng Đông Hồ, dòng tranh dân gian này có thể đã xuất hiện từ thời nhà Lý, khoảng thế kỷ XI. Tuy nhiên, khi tìm hiểu về nguồn gốc của nghề in tranh, nhiều nhà nghiên cứu lại cho rằng những nghệ nhân đầu tiên bắt đầu in tranh vào thời nhà Lê, dưới triều vua Lê Kính Tông trong giai đoạn 1600–1619. Vì vậy, thời điểm ra đời chính xác của tranh Đông Hồ đến nay vẫn còn nhiều ý kiến khác nhau và chưa có sự thống nhất hoàn toàn.",
+                        "<img src='./dong_ho_2.jpg' alt='' class='w-full h-auto object-cover rounded-sm shadow-md my-6'>",
+                        "Dù vậy, có thể khẳng định rằng tranh Đông Hồ đã tồn tại và phát triển qua nhiều thế kỷ, gắn bó chặt chẽ với đời sống văn hóa của người dân vùng Kinh Bắc. Từ khoảng thế kỷ XVII đến thế kỷ XIX, nghề làm tranh ở Đông Hồ bước vào thời kỳ phát triển hưng thịnh. Vào mỗi dịp cuối năm, cả làng trở nên nhộn nhịp với hoạt động in tranh và buôn bán tại các phiên chợ tranh tháng Chạp, nơi người dân từ nhiều vùng đến mua tranh về treo trong nhà dịp Tết, cầu mong may mắn, sung túc và bình an cho năm mới.",
+                        "<img src='./dong_ho_3.jpg' alt='' class='w-full h-auto object-cover rounded-sm shadow-md my-6'>"
+                    ] },
+                    { heading: "Đặc điểm", content: [
+                        "Tranh Đông Hồ mang phong cách riêng với đường nét khúc chiết, thanh đậm phân minh và tạo hình phồn thực, tạo nên nét đặc trưng không thể trộn lẫn với các dòng tranh dân gian khác. Nội dung tranh phản ánh nhiều khía cạnh của đời sống văn hóa dân gian Việt Nam, từ sinh hoạt thường ngày, phong tục tập quán đến những ước vọng về cuộc sống ấm no và hạnh phúc. Nhiều bức tranh nổi tiếng như “Đám cưới chuột”, “Đàn gà mẹ con”, “Vinh Hoa – Phú Quý” hay “Đàn lợn âm dương” không chỉ mang tính trang trí mà còn gửi gắm những thông điệp ý nghĩa về gia đình, sự sung túc và khát vọng về cuộc sống tốt đẹp. Trong tranh, hình ảnh và chữ thường được kết hợp hài hòa, với các câu chữ Hán hoặc chữ Nôm được đặt khéo léo trong bố cục, vừa bổ sung ý nghĩa cho nội dung vừa tạo nên sự cân đối cho tổng thể tác phẩm.",
+                        "<img src='./dong_ho_4.jpg' alt='' class='w-full h-auto object-cover rounded-sm shadow-md my-6'>"
+                    ] },
+                    { heading: "Quy trình", content: [
+                        "Quy trình làm tranh Đông Hồ thể hiện sự tinh xảo và khả năng khai thác các vật liệu từ thiên nhiên của người Việt. Nền tảng của tranh là giấy điệp, được tạo ra bằng cách quét nhiều lớp hỗn hợp gồm bột vỏ sò điệp và hồ dán lên giấy dó. Người thợ dùng chổi lá thông quét đều hỗn hợp này để tạo nên những đường vân tự nhiên trên mặt giấy, giúp giấy có màu trắng ngà và ánh lấp lánh đặc trưng. Màu sắc dùng trong tranh cũng được chiết xuất từ các nguyên liệu thiên nhiên quen thuộc, như màu đen từ than lá tre, màu đỏ nâu từ sỏi son, màu vàng từ hoa hoè hoặc hoa dành dành, và màu xanh lục từ lá chàm hoặc gỉ đồng. Các nghệ nhân khắc khuôn in trên ván gỗ, thường là gỗ thị hoặc gỗ thừng mực, rồi in từng lớp màu lên giấy. Quá trình in đòi hỏi sự tỉ mỉ để các lớp màu và nét in khớp chính xác với nhau, tạo nên những bức tranh có màu sắc hài hòa và đường nét rõ ràng.",
+                        "<img src='./dong_ho_5.jpg' alt='' class='w-full h-auto object-cover rounded-sm shadow-md my-6'>"
+                    ] },
+                    { heading: "Giá trị", content: [
+                        "Tranh Đông Hồ không chỉ là một sản phẩm thủ công mỹ nghệ mà còn được xem như tấm gương phản chiếu đời sống văn hóa, tinh thần và quan niệm thẩm mỹ của người Việt qua nhiều thế hệ. Thông qua những hình ảnh quen thuộc và gần gũi, các bức tranh đã tái hiện sinh động đời sống thường nhật, phong tục tập quán cũng như những ước vọng giản dị của con người về một cuộc sống ấm no, hạnh phúc. Những hình tượng như đàn gà, đàn lợn, em bé hay các cảnh sinh hoạt đời thường không chỉ mang tính trang trí mà còn gửi gắn những lời chúc tốt đẹp về sự sung túc, đông con nhiều cháu, gia đình sum vầy và một năm mới an khang, thịnh vượng. Chính vì vậy, tranh Đông Hồ từ lâu đã trở thành một phần quen thuộc trong đời sống tinh thần của người dân, đặc biệt vào dịp Tết Nguyên Đán khi nhiều gia đình treo tranh trong nhà như một biểu tượng của may mắn và niềm hy vọng cho năm mới.",
+                        "<img src='./dong_ho_6.jpg' alt='' class='w-full h-auto object-cover rounded-sm shadow-md my-6'>",
+                        "Ngày nay, cùng với sự phát triển của xã hội hiện đại, tranh Đông Hồ không chỉ tồn tại trong không gian văn hóa truyền thống mà còn trở thành nguồn cảm hứng cho nhiều lĩnh vực sáng tạo đương đại. Những họa tiết, đường nét và màu sắc đặc trưng của dòng tranh dân gian này đã được ứng dụng trong thiết kế đồ họa, thời trang, sản phẩm văn hóa và các dự án nghệ thuật hiện đại. Nhiều nhà thiết kế đã khai thác vẻ đẹp mộc mạc và tinh giản của tranh Đông Hồ để tạo nên những sản phẩm mới mang hơi thở thời đại nhưng vẫn giữ được tinh thần và bản sắc văn hóa Việt. Sự kết hợp giữa truyền thống và hiện đại ấy không chỉ góp phần làm mới giá trị của tranh Đông Hồ mà còn khẳng định sức sống bền duy của một di sản văn hóa lâu đời trong đời sống đương đại."
+                    ] },
+                    { heading: "Kết luận", content: [
+                        "Trải qua nhiều biến đổi của thời gian, làng tranh Đông Hồ vẫn giữ được vị trí đặc biệt trong đời sống văn hóa Việt Nam. Với giá trị nghệ thuật và ý nghĩa văn hóa sâu sắc, dòng tranh dân gian này không chỉ lưu giữ ký giữ của quá khứ mà còn tiếp tục truyền cảm hứng cho hiện tại và tương lai, góp phần bảo tồn và lan tỏa những nét đẹp truyền thống của dân tộc.",
+                        "<img src='./dong_ho_7.jpg' alt='' class='w-full h-auto object-cover rounded-sm shadow-md my-6'>"
+                    ] }
+                ]
+            },
+            {
+                id: "hang-trong", title: "Tranh Hàng Trống", location: "Hà Nội",
+                quote: "Hà Nội nghìn năm cổ kính mang cái đẹp thơ mộng từng góc phố vẫn còn những nét xưa cũ hay từ nụ cười, câu nói của người dân. Và ở trong đó tồn tại một thứ nghệ thuật nói lên từng cái đẹp đẽ của Hà Nội một cách tinh tế qua những cái chấm phá của ngòi đen, cọ màu được thể trên những bức tranh Hàng Trống. Qua dòng chảy của thời gian, tranh dân gian Hàng Trống không chỉ lưu giữ những giá trị nghệ thuật độc đáo mà còn trở thành một phần ký ức văn hóa, phản ánh đời sống tinh thần và tâm hồn thanh lịch của người Hà Nội xưa.",
+                img: "./hang_trong_cover.jpg",
+                coverImg: "./hang_trong_cover.jpg",
+                sections: [
+                    { heading: "1. Giới thiệu chung", content: [
+                        "Tranh dân gian Hàng Trống ra đời và phát triển mạnh tại khu phố cổ Phố Hàng Trống, gắn liền với đời sống văn hóa của người dân Hà Nội từ nhiều thế kỷ trước. Tranh Hàng Trống mang vẻ thanh nhã, tinh tế, phản ánh phong vị thị thành và gu thẩm mỹ của người Tràng An xưa, những bức tranh được tạo nên từ sự kết hợp giữa nét in từ ván khắc gỗ và phần tô màu hoàn toàn bằng tay. Người nghệ nhân sử dụng mực nho để in nét, sau đó dùng cọ và màu tự nhiên để điểm tô, khiến mỗi bức tranh đều mang dấu ấn riêng, không bức nào hoàn toàn giống bức nào.",
+                        "<img src='./hang_trong_1.jpg' alt='' class='w-full h-auto object-cover rounded-sm shadow-md my-6'>"
+                    ] },
+                    { heading: "2. Lịch sử", content: [
+                        "Tranh dân gian Hàng Trống được coi là dòng tranh đặc trưng của đất Kinh kỳ, phục vụ nhu cầu của tầng lớp thị dân. Đề tài trong tranh thể hiện sự giao thoa giữa Phật giáo, Nho giáo với nét đẹp trong sinh hoạt văn hoá hàng ngày. Chưa có tài liệu nào khẳng định thời điểm, hoàn cảnh ra đời chính xác của dòng tranh này nhưng đa số các nhà nghiên cứu cho rằng tranh dân gian Hàng Trống ra đời vào cuối thời Lê, đầu thời Nguyễn (khoảng cuối thế kỷ 18 đầu thế kỉ 19); phát triển rực rỡ vào cuối thế kỷ 19, đầu thế kỉ 20 và suy tàn vào nửa cuối thế kỷ 20. Ban đầu tranh có hai đề tài chính là Tranh thờ và Tranh tết, theo thời gian xuất hiện thêm nhóm tranh thứ 3 là Tranh thế sự.",
+                        "<img src='./hang_trong_2.jpg' alt='' class='w-full h-auto object-cover rounded-sm shadow-md my-6'>",
+                        "Trải qua thăng trầm lịch sử, đến nay chỉ còn duy nhất nghệ nhân Lê Đình Nghiên (con trai nghệ nhân Lê Đình Liệu) bảo tồn và phát huy dòng tranh này tại số 22 phố Cửa Đông, quận Hoàn Kiếm, thành phố Hà Nội.",
+                        "<img src='./hang_trong_3.jpg' alt='' class='w-full h-auto object-cover rounded-sm shadow-md my-6'>"
+                    ] },
+                    { heading: "3. Đặc điểm", content: [
+                        "Tranh dân gian Tranh Hàng Trống mang nhiều đặc điểm nghệ thuật độc đáo, thể hiện vẻ đẹp tinh tế và thanh nhã của người Hà Nội xưa. Một trong những nét đặc trưng nổi bật của dòng tranh này là sự kết hợp giữa kỹ thuật in nét bằng ván khắc gỗ và việc tô màu hoàn toàn bằng tay của người nghệ nhân. Sau khi in phần nét đen lên giấy, nghệ nhân sẽ dùng cọ để tô màu, vì vậy mỗi bức tranh tuy cùng một bản in nhưng vẫn có sắc thái riêng, không bức nào giống hệt bức nào. Màu sắc trong tranh thường tươi sáng, rực rỡ nhưng vẫn hài hòa, phổ biến là các gam đỏ, vàng, xanh, hồng được pha chế từ những màu tự nhiên. Bên cạnh đó, đường nét của tranh mềm mại, thanh thoát và có tính trang trí cao, thể hiện sự khéo léo và óc thẩm mỹ của người nghệ nhân.",
+                        "<img src='./hang_trong_4.jpg' alt='' class='w-full h-auto object-cover rounded-sm shadow-md my-6'>",
+                        "Chủ đề của tranh Hàng Trống cũng rất phong phú, bao gồm tranh thờ, tranh chúc phúc và tranh sinh hoạt đời sống. Chẳng hạn như bức “Ngũ Hổ” thường được treo trong không gian thờ cúng để thể hiện sức mạnh và sự bảo hộ, hay bức “Tố Nữ” lại khắc họa hình ảnh những thiếu nữ duyên dáng với trang phục truyền thống, thể hiện vẻ đẹp thanh lịch của người phụ nữ. Ngoài ra còn có những bức tranh mang ý nghĩa cầu may mắn, hạnh phúc trong dịp “Tết Nguyên Đán” góp phần làm cho không gian ngày Tết thêm rực rỡ và đậm đà bản sắc văn hóa dân tộc.",
+                        "<img src='./hang_trong_5.jpg' alt='' class='w-full h-auto object-cover rounded-sm shadow-md my-6'>"
+                    ] },
+                    { heading: "4. Quy trình", content: [
+                        "Quy trình làm Tranh Hàng Trống được chia thành ba công đoạn chính: in tranh, bồi tranh và vẽ màu. Trước hết là công đoạn in tranh bằng phuơng pháp in âm bản, nghệ nhân sử dụng ván khắc gỗ, mực in và con lăn để in các nét cơ bản lên giấy. Sau khi đặt giấy lên ván in, họ dùng xơ mướp xoa đều để các nét khắc hiện rõ rồi đem bản in đi phơi khô. Tiếp theo là công đoạn bồi tranh, đây là bước quan trọng giúp tranh bền và đẹp hơn. Nghệ nhân dùng hồ nếp hoặc hồ bột mì để bồi nhiều lớp giấy dó phía sau bức tranh, thường từ ba đến năm lớp, giúp tranh phẳng, chắc và ít bị cong vênh, sau đó tiếp tục phơi khô. Cuối cùng là công đoạn vẽ màu, trong đó nghệ nhân tô các màu chủ đạo như lam, hồng, lục, đỏ, da cam và vàng để tạo nên vẻ rực rỡ đặc trưng. Đặc biệt, tranh Hàng Trống nổi bật với kỹ thuật vờn màu, giúp tạo các mảng màu đậm nhạt mềm mại, làm hình ảnh trở nên sinh động. Ngoài ra, nghệ nhân còn sử dụng kỹ thuật vẽ nét phin để nhấn mạnh những chi tiết quan trọng, góp phần làm cho bức tranh trở nên tinh tế và giàu sức sống.",
+                        "<img src='./hang_trong_6.jpg' alt='' class='w-full h-auto object-cover rounded-sm shadow-md my-6'>"
+                    ] },
+                    { heading: "5. Giá trị", content: [
+                        "Tranh Hàng Trống không chỉ là một dòng tranh dân gian mà còn là kết tinh của vẻ đẹp văn hóa và tâm hồn người Hà Nội xưa qua từng nét vẽ mềm mại và những gam màu rực rỡ, tranh Hàng Trống thể hiện tài hoa và sự tinh tế của người nghệ nhân tạo nên một giá trị nghệ thuật độc đáo khó trộn lẫn. Không chỉ dừng lại ở giá trị thẩm mỹ, những bức tranh còn chứa đựng ý nghĩa văn hóa và tín ngưỡng sâu sắc với mong ước về may mắn, bình an và hạnh phúc. Tranh Hàng Trống lưu giữ trong mình dấu ấn của thời gian, phản ánh đời sống tinh thần, phong tục và quan niệm thẩm mỹ của người Hà Nội qua nhiều thế hệ. Chính vì vậy, dòng tranh này không chỉ là một tác phẩm nghệ thuật mà còn là một di sản văn hóa quý giá, góp phần làm nên vẻ đẹp cổ kính và chiều sâu văn hiến của Hà Nội nghìn năm.",
+                        "<img src='./hang_trong_7.jpg' alt='' class='w-full h-auto object-cover rounded-sm shadow-md my-6'>",
+                        "Tuy nhiên, dù mang nhiều giá trị tinh thần nghệ thuật đẹp đẽ và nhân văn, tranh Hàng Trống đang đứng trước nguy cơ mai một, thất truyền. Cả một phố nghề sầm uất khi xưa còn sót lại duy nhất người nghệ nhân già Lê Đình Nghiên, cũng đã ở ngưỡng tuổi xế chiều. Sau nghệ nhân Lê Đình Nghiên, anh Lê Hoàn, con trai út của ông là người kế thừa truyền thống của gia đình và tiếp tục nối dài mạch sống của dòng tranh dân gian Hàng Trống. Với sức trẻ và lòng đam mê nghề nghiệp, ngoài những kỹ thuật làm tranh được cha mình truyền dạy, Lê Hoàn trong khoảng thời gian làm việc ở Bảo tàng Mỹ thuật Việt Nam còn tham gia nhiều lớp đào tạo về bảo quản, phục chế tranh tạo cơ sở để anh trau dồi thêm kiến thức và kỹ thuật làm tranh."
+                    ] },
+                    { heading: "6. Kết luận", content: [
+                        "Bước qua từng nấc thang của thời gian, tranh dân gian Hàng Trống tuy đang rơi vào tình trạng mai một, thất truyền nghiêm trọng nhưng từ những giá trị nghệ thuật mà dòng tranh này đã tạo nên và lưu giữ thì không thể phủ nhận rằng tranh Hàng Trống không chỉ là một tác phẩm nghệ thuật đơn thuần mà những bức tranh này còn phản ánh những khát vọng và cái nhìn thẩm mỹ truyền thống của người Việt. Với từng đường nét đầy tinh xảo và những công đoạn chạm khắc kỳ công, tranh Hàng Trống chính là niềm tự hào của dân tộc, minh chứng cho sự sáng tạo và tài hoa của các nghệ nhân Việt Nam. Vì vậỵ, việc gìn giữ và phát huy dòng tranh Hàng Trống không chỉ giúp bảo tồn một di sản văn hóa quý báu mà còn góp phần giữ gìn bản sắc truyền thống Việt Nam cho các thế hệ mai sau.",
+                        "<img src='./hang_trong_8.jpg' alt='' class='w-full h-auto object-cover rounded-sm shadow-md my-6'>"
+                    ] }
+                ]
+            },
+            {
+                id: "tranh-kieng", title: "Tranh Kiếng (Kính)", location: "Nam Bộ",
+                quote: "Với nghệ thuật làm tranh kiếng Nam Bộ, nơi cái đẹp không được cất giữ mà len vào đời sống hằng ngày của người dân. Sinh ra từ sự giao thoa của thủy tinh, sắc màu và ánh sáng, tranh kiếng là một phần hơi thở của đời sống, nơi chốn tâm linh, và thậm chí là cả phố phường đông đúc. Người ta có thể bắt gặp loại hình nghệ thuật này ở nơi trang nghiêm như phía trên bàn thờ tổ tiên, hay một nơi bình dân như trên tủ kính một xe hủ tiếu. Khởi nguồn từ Trung Quốc và du nhập vào Việt Nam từ thế kỷ 19, tranh kiếng đã được Việt hóa một cách sâu sắc. Nghệ thuật này rời khỏi chốn cung đình Huế để hòa mình vào mạch sống dân dã, trở thành một phần trong đời sống văn hóa và tín ngưỡng của người dân phương Nam. Tranh kiếng cho đến hôm nay vẫn đang lấp lánh đâu đó giữa chốn phồn hoa, kể câu chuyện về một miền đất trọng nghĩa, trọng tình, và trọng cái đẹp được nuôi dưỡng từ chính đời sống thường nhật.",
+                img: "./tranh_kieng_cover.jpg",
+                coverImg: "./tranh_kieng_cover.jpg",
+                sections: [
+                    { heading: "1. Giới thiệu chung", content: [
+                        "Đầu thế kỷ XX, Sài Gòn – Chợ Lớn với vai trò là trung tâm của cộng đồng người Hoa, đã trở thành cái nôi khai sinh nghệ thuật tranh kiếng. Tại đây, hai dòng tranh chính đã phát triển mạnh mẽ là tranh khánh chúc và tranh thờ phụng.",
+                        "<img src='./tranh_kieng_1.jpg' alt='' class='w-full h-auto object-cover rounded-sm shadow-md my-6'>",
+                        "Tranh khánh chúc thường có chữ Hán thếp vàng trên nền đỏ, chuyên dùng để trao tặng trong các dịp lễ tết, khai trương, tân gia như một lời chúc phúc. Tranh thờ phụng vẽ các vị thần linh trong tín ngưỡng dân gian Hoa như Quan Công, Quan Âm, Thiên Hậu. Những bức tranh này không chỉ là di sản văn hóa mà còn là chỗ dựa tinh thần quý báu, mang đến sự bình an và gìn giữ bản sắc cho cộng đồng người Hoa nơi đất khách.",
+                        "Từ Chợ Lớn, tranh kiếng bắt đầu cuộc hành trình chinh phục miền sông nước. Theo những chuyến ghe xuồng, toa xe lửa, thứ nghệ thuật rực rỡ ấy lan tỏa khắp miền Đông và Tây Nam Bộ. Cứ mỗi độ Tết đến xuân về, việc sắm một bức tranh kiếng treo trong nhà không còn là thú chơi, mà đã trở thành một xu hướng, một ước mơ thầm kín của bao gia đình, như một lời cầu chúc cho một năm mới an khang.",
+                        "Cơn sốt tranh kiếng đã biến vẽ tranh thành một nghề đầy triển vọng. Nhiều người trẻ với hoài bão lớn đã quyết chí lên Chợ Lớn “tầm sư học đạo”, theo đuổi giấc mơ trở thành nghệ nhân. Sau vài năm lĩnh hội ngón nghề, không ít người quay về quê hương, mở những xưởng tranh riêng, gieo mầm cho nghệ thuật tranh kiếng bung nở khắp các tỉnh thành. Chính từ dòng chảy đó, nhiều trung tâm tranh kiếng với những dấu ấn riêng biệt đã ra đời: Lái Thiêu với dòng tranh thờ Cửu Huyền Thất Tổ; Gò Công với kỹ thuật cẩn vỏ ốc tinh xảo; Bà Vệ (An Giang) ghi dấu ấn với các tích truyện; tuồng cổ đầy tính nghệ thuật; Dòng tranh kiếng Khmer Nam Bộ ở Trà Vinh, Sóc Trăng lại chuyên chở những chủ đề Phật giáo Nam Tông và các biểu tượng để trấn yểm tà ma, phản ánh đời sống tâm linh phong phú của cộng đồng",
+                        "<img src='./tranh_kieng_2.jpg' alt='' class='w-full h-auto object-cover rounded-sm shadow-md my-6'>"
+                    ] },
+                    { heading: "2. Lịch sử phát triển", content: [
+                        "Giai đoạn Chợ Lớn (đầu thế kỷ XX): Những tiệm kiếng đầu tiên ở Chợ Lớn chủ yếu buôn bán các loại kính soi mặt, kính lộng khung tủ, cửa chớp. Dần dần, họ bắt đầu vẽ các bức đại tự, thư họa trên kính để phục vụ nhu cầu thờ tự và khánh chúc trong cộng đồng. Đề tài chủ yếu là tranh thờ như Quan Thánh Đế, Ngũ Công Vương Phật, Quan Âm Nam Hải và các tranh chúc tụng như Ngư Ông đắc lợi, Mã đáo thành công .",
+                        "Giai đoạn Lái Thiêu (thập niên 1920): Đây là thời kỳ tranh kính thực sự được \"Việt hóa\". Khi nghề vẽ tranh kính chuyển về Lái Thiêu (Bình Dương) - trung tâm thủ công nghiệp phồn thịnh của miền Đông Nam Bộ, nơi có đội ngũ họa sĩ từ Trường Mỹ nghệ Thủ Dầu Một tham gia, dòng tranh này phát triển vượt bậc. Lái Thiêu trở thành đầu mối sản xuất và phân phối tranh khắp lục tỉnh Nam Kỳ. Đề tài mở rộng sang cảnh sắc quê hương, tích truyện dân gian, tranh thờ các vị thần bản địa như Bà Địa Mẫu, Cửu Thiên Huyền Nữ .",
+                        "<img src='./tranh_kieng_3.jpg' alt='' class='w-full h-auto object-cover rounded-sm shadow-md my-6'>",
+                        "Giai đoạn lan tỏa khắp Nam Bộ (1940-1950): Từ Lái Thiêu, nghề vẽ tranh kính lan tỏa về miền Tây, hình thành nhiều trung tâm mới như Mỹ Tho, Gò Công, Chợ Mới (An Giang), và đặc biệt là vùng đồng bào Khmer ở Trà Vinh, Sóc Trăng. Mỗi vùng tiếp nhận và sáng tạo thêm những nét riêng, tạo nên sự đa dạng cho dòng tranh này .",
+                        "Người Nam Bộ thường gọi là tranh kiếng thay vì \"tranh kính\". Theo các nhà nghiên cứu, đây là cách gọi để tránh phạm húy tên của võ tướng Nguyễn Hữu Cảnh (người có công lớn trong việc mở mang bờ cõi phương Nam), do chữ \"kính\" trùng với tên tự của ông là Nguyễn Hữu Kính ."
+                    ] },
+                    { heading: "3. Đặc điểm", content: [
+                        "Điều làm nên sự khác biệt và cũng là thách thức lớn nhất của tranh kiếng so với các loại hình hội họa khác, chính là kỹ thuật vẽ ngược độc đáo. Thay vì vẽ trực tiếp lên bề mặt, người nghệ nhân phải thao tác ở mặt sau của tấm kính, và mặt trước mới là bề mặt hoàn thiện để ngắm nhìn. Điều này đồng nghĩa với việc mọi thứ đều bị đảo ngược: chi tiết nào sẽ được nhìn thấy trước (như tiền cảnh) phải vẽ sau cùng, còn hậu cảnh (như nền trời, mây) lại phải được vẽ đầu tiên. Đòi hỏi người nghệ nhân phải có một tư duy hình ảnh không gian đặc biệt và sự tính toán tỉ mỉ đến từng milimet.",
+                        "Một tác phẩm tranh kiếng cần trải qua 3 bước chính: phóng tác (phác thảo) – vẽ nét (định hình) và đánh màu. Trước khi phóng tác trên kiếng, nghệ nhân thường phác thảo bằng bút chì nhám, dùng cọ sắc nét để lấy khuôn, có những nét cần sắc thì phải đánh bằng dao lam. Cuối cùng là đánh màu – công đoạn vừa đòi hỏi óc sáng tạo để tạo ra bản phối màu hợp ý hợp cảnh, vừa tuân thủ nguyên tắc như tô màu từ trong ra ngoài, tô liên tục không gián đoạn. Ba dòng tranh, ba sắc thái",
+                        "Quá trình phát triển và lan tỏa khắp Nam Bộ đã tạo nên ba dòng tranh kính chính, mỗi dòng mang một diện mạo riêng, phản ánh đời sống văn hóa đa dạng của cộng đồng cư dân nơi đây.",
+                        "<img src='./tranh_kieng_4.jpg' alt='' class='w-full h-auto object-cover rounded-sm shadow-md my-6'>",
+                        "Tranh kính Chợ Lớn ra đời từ đầu thế kỷ XX trong cộng đồng người Hoa, mang đậm dấu ấn văn hóa Quảng Đông với sắc đỏ chủ đạo, kết hợp tinh xảo kỹ thuật tráng thủy và dán quỳ vàng bạc. Đề tài chủ yếu xoay quanh tranh thờ như Quan Thánh Đế, Ngũ Công Vương Phật và các bức khánh chúc như Ngư Ông đắc lợi, Mã đáo thành công – thể hiện khát vọng về tài lộc và sự thịnh vượng.",
+                        "Trong khi đó, tranh kính Lái Thiêu (Bình Dương) lại mang phong cách phóng khoáng, pha nhiều màu sắc tươi sáng, sử dụng mảnh ốc xà cừ tạo hiệu ứng lung linh. Khi nghề vẽ tranh kính chuyển về vùng đất này vào thập niên 1920, nó được các họa sĩ từ Trường Mỹ nghệ Thủ Dầu Một tiếp biến, mở rộng đề tài sang cảnh sắc quê hương, tích truyện dân gian, gần gũi hơn với đời sống người Việt.",
+                        "Đặc biệt, tranh kính Khmer Nam Bộ ở Trà Vinh, Sóc Trăng là sự hòa quyện độc đáo giữa kỹ thuật vẽ tranh kính với tín ngưỡng Phật giáo Nam tông. Nhân vật trong tranh mang trang phục truyền thống Khmer với áo cổ vuông, váy xăm pốt, quàng khăn rằn, tạo nên một dòng tranh mang đậm bản sắc dân tộc thiểu số.",
+                        "Tranh kính Nam Bộ phản ánh đời sống tinh thần đa dạng với bốn chủ đề chính. Phát triển mạnh nhất là tranh thờ cúng, tôn giáo với hình tượng Phật, Bồ Tát, các vị thần và tổ tiên – đáp ứng nhu cầu tâm linh sâu sắc của người dân. Bên cạnh đó là tranh chúc tụng với các đề tài như Mã đáo thành công, Ngư ông đắc lợi, Bát Tiên – thể hiện ước vọng về may mắn, tài lộc.",
+                        "<img src='./tranh_kieng_5.jpg' alt='' class='w-full h-auto object-cover rounded-sm shadow-md my-6'>",
+                        "Tranh phong cảnh đưa người xem đến với những khung cảnh sơn thủy hữu tình, sinh hoạt miệt vườn, trẻ chăn trâu thổi sáo – đậm chất thơ của vùng sông nước. Trong khi đó, tranh tích truyện minh họa các câu chuyện dân gian quen thuộc như Tấm Cám, Thoại Khanh – Châu Tuấn, Lưu Bình – Dương Lễ, góp phần gìn giữ và truyền tải những giá trị đạo đức truyền thống.",
+                        "Nhiều nghệ nhân tài hoa đã góp phần làm nên dấu ấn trăm năm của nghệ thuật tranh kiếng Nam Bộ. Đầu tiên phải kể đến là nghệ nhân Tô Hà của tiệm Vĩnh Huê, Lương Chí Bằng của tiệm Tân Huê thuộc dòng tranh kiếng Chợ Lớn. Kế đến là nghệ nhân Lê Thị Tám, Nguyễn Thế Vinh của dòng tranh Bà Vệ, hay nghệ nhân Trương Cung Thơ của tranh kiếng Lái Thiêu. Điều khiến di sản của họ càng thêm đáng trân trọng, đó là họ chưa một lần đặt chân đến các trường lớp mỹ thuật chính quy. Tất cả tinh hoa đều được hun đúc từ kinh nghiệm thực tiễn, sự nhạy cảm thiên bẩm và một lòng đam mê cháy bỏng. Chính điều đó đã tạo nên những tác phẩm mang dấu ấn cá nhân sâu đậm, với những cách phối màu độc đáo, vừa rực rỡ lại vừa hài hòa"
+                    ] },
+                    { heading: "4. Quy trình chế tác", content: [
+                        "Để tạo nên một bức tranh kính, người nghệ nhân phải trải qua sáu công đoạn công phu, đòi hỏi sự tỉ mỉ và kinh nghiệm. Tất cả bắt đầu từ việc chuẩn bị mẫu và nguyên liệu với kính dày 3 ly, màu vẽ truyền thống là bột màu trộn dầu cây du đồng.",
+                        "Công đoạn quan trọng nhất là vẽ nét với hai bước \"tỉa\" và \"tách\". Nghệ nhân đặt kính lên mẫu, dùng cọ nhọn vẽ đồ theo đường nét – gọi là \"tỉa\", sau đó vẽ các chi tiết – gọi là \"tách\" hay \"bắt chỉ\" trong nghề của người Khmer. Đây là lúc tạo nên đường viền cho toàn bộ bức tranh, đòi hỏi bàn tay khéo léo và đôi mắt tinh tường.",
+                        "Sau khi phơi khô lần một, nghệ nhân bắt đầu tô màu theo trình tự đặc biệt: tiền cảnh trước, hậu cảnh sau – điều ngược lại hoàn toàn với vẽ thông thường. Màu nền được tô cuối cùng, phổ biến là xanh da trời, cam, đen hoặc đỏ. Tiếp tục phơi khô lần hai, đến công đoạn hoàn thiện với việc điểm xuyết nhũ bạc (làm từ bột ốc xà cừ), kim tuyến, dán vàng quỳ, phủ lớp sơn bảo vệ và đóng khung. Tùy theo thời tiết, một bức tranh có thể mất đến cả tháng để hoàn thiện.",
+                        "<img src='./tranh_kieng_6.jpg' alt='' class='w-full h-auto object-cover rounded-sm shadow-md my-6'>"
+                    ] },
+                    { heading: "5. Giá trị văn hóa và nghệ thuật", content: [
+                        "Hơn một thế kỷ qua, tranh kính Nam Bộ đã trở thành \"nghệ phẩm của mọi nhà\", gắn liền với đời sống tâm linh, tín ngưỡng của người dân phương Nam. Từ nhu cầu thờ tự, thờ tổ tiên, thờ Phật, thần thánh cho đến những dịp lễ Tết, tân gia, khánh thọ – tất cả đều có sự hiện diện của tranh kính.",
+                        "Giá trị văn hóa của dòng tranh này còn nằm ở khả năng phản ánh quá trình giao lưu và tiếp biến văn hóa Nam Bộ: tiếp thu kỹ thuật từ người Hoa, hòa quyện với mỹ cảm người Việt, và thích ứng với văn hóa bản địa của đồng bào Khmer. Đó là minh chứng cho sự cởi mở, dung hợp văn hóa đặc trưng của vùng đất mới.",
+                        "Về mặt nghệ thuật, tranh kính là sự kết hợp độc đáo giữa kỹ thuật và nghệ thuật. Kỹ thuật vẽ ngược đòi hỏi trình độ tay nghề cao, tư duy không gian đảo ngược, trong khi khả năng sáng tạo về bố cục, màu sắc thể hiện gu thẩm mỹ tinh tế của người nghệ nhân. Khác với các dòng tranh dân gian khác thường in từ bản khắc gỗ, tranh kính được vẽ tay hoàn toàn, cho phép người nghệ nhân tự do thể hiện cá tính. Các bức tranh vừa mang tính ước lệ dân gian, vừa tiếp nhận luật thấu thị, cách xử lý không gian, đậm nhạt của hội họa hiện đại.",
+                        "<img src='./tranh_kieng_7.jpg' alt='' class='w-full h-auto object-cover rounded-sm shadow-md my-6'>",
+                        "Giá trị lịch sử của tranh kính cũng không thể phủ nhận khi mỗi bức tranh cổ là một tư liệu sống về đời sống văn hóa, thẩm mỹ và tín ngưỡng của người Nam Bộ qua các thời kỳ. Những cuộc triển lãm về tranh kính vào các năm 1957 tại Sài Gòn và 2013, 2023 tại TP.HCM đã thu hút sự quan tâm lớn, đánh thức ký ức về một thời kỳ huy hoàng của dòng tranh này. Đặc biệt, sự quan tâm của thế hệ trẻ – như những nhà sưu tầm 25-29 tuổi tại triển lãm năm 2023 – đang mở ra hy vọng cho sự hồi sinh và tiếp nối dòng tranh độc đáo này giữa thời đại công nghệ số.",
+                        "Trong bối cảnh hiện đại với sự phát triển của công nghệ in ấn, tranh kính Nam Bộ vẫn đứng vững như một di sản văn hóa quý giá. Việc bảo tồn và phát huy giá trị của nó không chỉ là gìn giữ một kỹ thuật vẽ truyền thống, mà còn là lưu giữ một phần hồn cốt văn hóa, một nét đẹp trong tâm hồn phóng khoáng, thực dụng mà vẫn đầy chất thơ của người dân vùng sông nước Cửu Long"
+                    ] },
+                    { heading: "6. Kết luận", content: [
+                        "Trải qua hơn một thế kỷ, tranh kiếng vẫn giữ nguyên vị trí không thể thay thế trong đời sống tâm linh và tinh thần của người dân Nam Bộ. Những tấm kính màu ấy không đơn thuần là cổ vật, mà là hiện thân sống động của một thuở “Nam Kỳ Lục Tỉnh” rực rỡ, và hơn hết, là một sợi dây kết nối vô hình, gắn kết các thế hệ qua vẻ đẹp thuần khiết của nghệ thuật dân gian.",
+                        "<img src='./tranh_kieng_8.jpg' alt='' class='w-full h-auto object-cover rounded-sm shadow-md my-6'>"
+                    ] }
+                ]
+            },
+            {
+                id: "lang-sinh", title: "Tranh Làng Sình", location: "Huế",
+                quote: "Huế – vùng đất cố đô trầm mặc không chỉ nổi tiếng với những lăng tẩm cổ kính, dòng sông Hương dịu dàng hay nhịp sống chậm rãi đặc trưng mà còn là nơi lưu giữ nhiều giá trị văn hóa truyền thống lâu đời. Trong dòng chảy văn hóa ấy, tranh dân gian làng Sình hiện lên như một nét chấm phá mộc mạc nhưng đầy ý nghĩa trong đời sống tinh thần của người dân xứ Huế. Không cầu kỳ hay rực rỡ như nhiều loại hình nghệ thuật khác, tranh làng Sình mang vẻ đẹp giản dị, gần gũi và ẩn chứa trong đó là chiều sâu về tín ngưỡng cũng như đời sống văn hóa dân gian của người dân xứ Huế. Qua từng đường nét in mộc và những gam màu tươi sáng, tranh làng Sình không chỉ phản ánh đời sống tâm linh mà còn lưu giữ những quan niệm, niềm tin của người dân Huế qua nhiều thế hệ.",
+                img: "./lang_sinh_cover.jpg",
+                coverImg: "./lang_sinh_cover.jpg",
+                sections: [
+                    { heading: "1. Giới thiệu chung", content: [
+                        "Tranh dân gian làng Sình có nguồn gốc từ làng Lại Ân, thường gọi là làng Sình, thuộc xã Phú Mậu, thành phố Huế. Đây là một dòng tranh dân gian độc đáo của miền Trung Việt Nam, gắn bó chặt chẽ với đời sống tín ngưỡng và phong tục tập quán của người dân địa phương.",
+                        "<img src='./lang_sinh_1.jpg' alt='' class='w-full h-auto object-cover rounded-sm shadow-md my-6'>",
+                        "Khác với nhiều dòng tranh dân gian nổi tiếng như tranh Đông Hồ hay tranh Hàng Trống thường được dùng để trang trí, tranh làng Sình chủ yếu phục vụ cho mục đích thờ cúng và các nghi lễ tín ngưỡng dân gian. Người dân thường sử dụng tranh trong các dịp lễ cúng, lễ tết hoặc các nghi thức cầu bình an, giải hạn, trừ tà. Những bức tranh được in bằng ván khắc gỗ trên giấy dó, sau đó tô màu bằng tay với các gam màu giản dị nhưng nổi bật. Chính sự kết hợp giữa kỹ thuật in truyền thống và bàn tay khéo léo của người nghệ nhân đã tạo nên nét riêng đặc trưng cho dòng tranh này."
+                    ] },
+                    { heading: "2. Lịch sử", content: [
+                        "Theo nhiều tài liệu nghiên cứu văn hóa dân gian, tranh làng Sình được hình thành từ khoảng thế kỷ XVI – XVII, khi cư dân người Việt từ miền Bắc di cư vào vùng đất Thuận Hóa và mang theo nhiều nghề thủ công truyền thống. Từ đó, nghề làm tranh dần phát triển tại làng Sình và trở thành một nghề quen thuộc của người dân nơi đây.",
+                        "Trong suốt nhiều thế kỷ, tranh làng Sình đóng vai trò quan trọng trong đời sống tín ngưỡng của cộng đồng. Các bức tranh thường được dùng trong các nghi lễ cúng thần linh, cầu bình an, cầu sức khỏe hoặc dùng làm hình nhân thế mạng trong các nghi thức tâm linh. Sau khi hoàn thành nghi lễ, nhiều bức tranh sẽ được hóa đi như một cách gửi gắm lời cầu nguyện đến thế giới tâm linh.",
+                        "<img src='./lang_sinh_2.jpg' alt='' class='w-full h-auto object-cover rounded-sm shadow-md my-6'>",
+                        "Tuy nhiên, cùng với sự thay đổi của xã hội hiện đại, nghề làm tranh làng Sình từng có thời gian bị mai một. Số lượng nghệ nhân giảm dần và nghề truyền thống đứng trước nguy cơ thất truyền. Những năm gần đây, nhờ sự quan tâm của các nhà nghiên cứu văn hóa, bảo tàng và chính quyền địa phương, nghề làm tranh làng Sình đã được phục hồi và bảo tồn như một di sản văn hóa đặc sắc của Huế."
+                    ] },
+                    { heading: "3. Đặc điểm", content: [
+                        "Tranh làng Sình mang nhiều đặc điểm nghệ thuật riêng biệt, thể hiện sự mộc mạc nhưng tinh tế của nghệ thuật dân gian miền Trung. Đặc điểm nổi bật nhất của dòng tranh này là kỹ thuật in tranh bằng ván khắc gỗ. Các nghệ nhân khắc hình ảnh lên ván gỗ, sau đó dùng mực để in phần nét lên giấy dó. Sau khi in xong, tranh sẽ được tô màu hoàn toàn bằng tay.",
+                        "Màu sắc trong tranh làng Sình thường khá tươi sáng, phổ biến là các gam đỏ, vàng, xanh, tím hoặc đen. Trước đây, những màu này chủ yếu được làm từ các nguyên liệu tự nhiên như khoáng chất hoặc thực vật. Tuy không quá cầu kỳ, nhưng sự phối hợp màu sắc hài hòa đã tạo nên nét sinh động và đặc trưng riêng cho từng bức tranh.",
+                        "<img src='./lang_sinh_3.jpg' alt='' class='w-full h-auto object-cover rounded-sm shadow-md my-6'>",
+                        "Chủ đề của tranh làng Sình khá phong phú, nhưng phần lớn liên quan đến tín ngưỡng dân gian. Có thể kể đến các loại tranh như tranh thần linh, tranh nhân vật thế mạng, tranh con vật linh thiêng hay tranh mô tả con người trong đời sống thường ngày. Những hình ảnh này không chỉ mang ý nghĩa tâm linh mà còn phản ánh niềm tin và quan niệm của người dân về cuộc sống, sức khỏe và sự bình an."
+                    ] },
+                    { heading: "4. Quy trình", content: [
+                        "Quy trình làm tranh làng Sình gồm nhiều công đoạn thủ công, đòi hỏi sự tỉ mỉ và kinh nghiệm của người nghệ nhân.",
+                        "Trước hết là công đoạn khắc ván in. Người thợ sẽ lựa chọn gỗ thích hợp rồi khắc các hình ảnh lên bề mặt ván để tạo thành bản in cho từng loại tranh. Đây là bước quan trọng vì chất lượng bản khắc quyết định độ rõ nét của bức tranh.",
+                        "Sau đó là công đoạn in tranh. Giấy dó được đặt lên ván in đã thoa mực, người nghệ nhân dùng tay hoặc dụng cụ xoa nhẹ để các nét khắc in rõ lên giấy. Sau khi in xong, tranh được đem phơi khô.",
+                        "<img src='./lang_sinh_4.jpg' alt='' class='w-full h-auto object-cover rounded-sm shadow-md my-6'>",
+                        "Cuối cùng là công đoạn tô màu. Người nghệ nhân dùng cọ để tô các mảng màu lên tranh, tạo nên những gam màu rực rỡ nhưng vẫn giữ được vẻ mộc mạc đặc trưng. Chính công đoạn tô màu thủ công này khiến mỗi bức tranh dù cùng một bản in nhưng vẫn mang sắc thái riêng biệt."
+                    ] },
+                    { heading: "5. Giá trị", content: [
+                        "Tranh làng Sình không chỉ là một sản phẩm thủ công truyền thống mà còn là một phần quan trọng trong đời sống văn hóa và tín ngưỡng của người dân Huế. Qua từng bức tranh, ta có thể thấy được những quan niệm tâm linh và những mong ước giản dị của con người về sức khỏe, bình an và hạnh phúc.",
+                        "Bên cạnh giá trị tín ngưỡng, tranh làng Sình còn mang giá trị nghệ thuật và lịch sử sâu sắc. Những đường nét mộc mạc, màu sắc giản dị nhưng hài hòa đã tạo nên phong cách riêng biệt, góp phần làm phong phú thêm kho tàng nghệ thuật dân gian Việt Nam.",
+                        "<img src='./lang_sinh_5.jpg' alt='' class='w-full h-auto object-cover rounded-sm shadow-md my-6'>",
+                        "Ngày nay, tranh làng Sình không chỉ được biết đến trong phạm vi địa phương mà còn được giới thiệu rộng rãi như một nét văn hóa đặc trưng của Huế. Các hoạt động triển lãm, nghiên cứu và phục dựng nghề truyền thống đang góp phần giúp dòng tranh này tiếp tục tồn tại và phát triển trong đời sống hiện đại."
+                    ] },
+                    { heading: "6. Kết luận", content: [
+                        "Theo dòng chảy của thời gian, tranh dân gian làng Sình vẫn âm thầm tồn tại như một phần ký ức văn hóa của vùng đất cố đô. Dù mang vẻ đẹp giản dị và mộc mạc, những bức tranh ấy vẫn chứa đựng chiều sâu tinh thần và niềm tin của người dân Huế qua nhiều thế hệ.",
+                        "Việc gìn giữ và phát huy giá trị của tranh làng Sình không chỉ giúp bảo tồn một nghề thủ công truyền thống mà còn góp phần lưu giữ bản sắc văn hóa dân tộc. Từ những nét vẽ đơn sơ và những gam màu bình dị, tranh làng Sình đã trở thành minh chứng cho sự sáng tạo và tâm huyết của các nghệ nhân dân gian, đồng thời là một di sản văn hóa đáng trân trọng của Việt Nam.",
+                        "<img src='./lang_sinh_6.jpg' alt='' class='w-full h-auto object-cover rounded-sm shadow-md my-6'>"
+                    ] }
+                ]
+            },
+            {
+                id: "kim-hoang", title: "Tranh Kim Hoàng", location: "Hà Nội",
+                quote: "Tranh Kim Hoàng (tranh đỏ) là tên thường gọi của một dòng tranh dân gian phát triển khá mạnh từ thế kỷ 18 đến thế kỷ 19 của làng Kim Hoàng, xã Vân Canh, huyện Hoài Đức, tỉnh Hà Tây cũ, nay là Hà Nội. Đề tài trong tranh dân gian Kim Hoàng cũng được lấy từ chính cuộc sống mộc mạc, giản dị, quen thuộc, của người dân đồng bằng bắc Bộ nên dễ đi vào lòng người.",
+                img: "./kim_hoang_cover.jpg",
+                coverImg: "./kim_hoang_cover.jpg",
+                sections: [
+                    { heading: "1. Giới thiệu chung", content: [
+                        "Tranh Kim Hoàng (tranh đỏ) là tên thường gọi của một dòng tranh dân gian phát triển khá mạnh từ thế kỷ 18 đến thế kỷ 19 của làng Kim Hoàng, xã Vân Canh, huyện Hoài Đức, tỉnh Hà Tây cũ, nay là Hà Nội. Đề tài trong tranh dân gian Kim Hoàng cũng được lấy từ chính cuộc sống mộc mạc, giản dị, quen thuộc, của người dân đồng bằng bắc Bộ nên dễ đi vào lòng người. Hình ảnh trong mỗi bức tranh là con trâu, con bò, lợn, gà, là đời sống làng quê, cảnh ngày Tết, ông Công, ông Táo…",
+                        "<img src='./kim_hoang_1.jpg' alt='' class='w-full h-auto object-cover rounded-sm shadow-md my-6'>"
+                    ] },
+                    { heading: "2. Lịch sử", content: [
+                        "Kim Hoàng là một làng ven đô, phía Tây thành Thăng Long xưa - nay thuộc xã Vân Canh, huyện Hoài Đức, ngoại thành Hà Nội, vốn từ hai làng Kim Bảng và Hoàng Bảng nhập thành. Các cụ ở làng kể lại rằng dòng tranh này do ông Nguyễn Sỹ ở Thanh Hóa ra Thăng Long lập nghiệp ở làng Kim Hoàng sáng tạo ra, với mong muốn có một dòng tranh mới, phù hợp với nông dân cả về thẩm mỹ và túi tiền. Thế rồi, dần dần tranh Kim Hoàng được tổ chức thành một “phường tranh”, thu hút cả làng vào công việc này.",
+                        "Đến năm Ất Mão 1915, xảy ra trận lụt lớn do vỡ đê Hoàng Mạc, nước cuốn trôi nhiều ván in và dụng cụ làm nghề, nghề làm tranh Kim Hoàng từ đó suy giảm, chỉ còn lác đác vài hộ duy trì. Thêm nữa, về sau việc kinh doanh tranh Hàng Trống ngày càng phát triển, dẫn đến thị trường tranh Kim Hoàng bị thu hẹp dần. Tranh dân gian Kim Hoàng cũng không cạnh tranh được với tranh Đông Hồ vốn có giá rẻ hơn, vì thế dòng tranh này ngày càng mai một và rồi biến mất.",
+                        "<img src='./kim_hoang_2.jpg' alt='' class='w-full h-auto object-cover rounded-sm shadow-md my-6'>",
+                        "Dòng tranh dân gian Kim Hoàng từng tưởng như bị lãng quên trong lịch sử. Năm 1960, học giả Maurice Durand khi sưu tầm tranh dân gian Bắc Bộ và xuất bản sách L’imagerie populaire Vietnamienne đã vô tình giới thiệu một số tranh mà sau này được xác định có nguồn gốc từ làng Kim Hoàng. Nhờ quá trình tìm hiểu của các nhà nghiên cứu và Bảo tàng Mỹ thuật Việt Nam, nguồn gốc dòng tranh này mới được nhận diện rõ. Sau đó, nhà sưu tầm Nguyễn Thị Thu Hòa đã nỗ lực tìm tư liệu và quyết tâm khôi phục dòng tranh Kim Hoàng, đưa loại hình nghệ thuật này trở lại đời sống hiện đại dù gặp nhiều khó khăn."
+                    ] },
+                    { heading: "3. Đặc điểm tranh", content: [
+                        "Tranh Kim Hoàng mang chủ đề chính gắn liền với những hình ảnh quen thuộc gần gũi trong đời sống nông thôn miền Bắc. Cụ thể là tranh lợn, gà, cuộc sống đồng quê, ông Công ông Táo… Điểm giúp dòng tranh này trở nên khác biệt đó là nền giấy màu đỏ, loại giấy này đòi hỏi nhiều thời gian và công sức nên chính sản phẩm được tạo thành vô cùng độc đáo, ấn tượng. Tranh mang màu sắc vui tươi, thể hiện không khí rộn ràng ngày Tết.",
+                        "<img src='./kim_hoang_3.jpg' alt='' class='w-full h-auto object-cover rounded-sm shadow-md my-6'>",
+                        "Trên những bức tranh Kim Hoàng không chỉ có hình ảnh, mà có những câu thơ chữ Hán theo lối chữ thảo. Cả thơ và hình vẽ được thể hiện trong một bức tranh tạo nên một chỉnh thể hài hòa, chặt chẽ."
+                    ] },
+                    { heading: "4. Quy trình", content: [
+                        "Để bức tranh có nền đỏ rực rỡ, tươi tắn, người làm tranh Kim Hoàng thường dùng những bản khắc bằng gỗ thị, gỗ mít hay vàng tâm với những nét khắc tinh xảo và kỹ thuật in ngửa ván tài tình.",
+                        "Nét khắc ván in của tranh Kim Hoàng khá tinh xảo và thanh nhã, sở hữu tính hình tượng hóa và được cách điệu nhiều. Vật liệu gỗ phải đảm bảo tính mềm, dẻo, bền và đảm bảo không bị nứt. Người thợ phải sử dụng nhiều loại đục, dao trổ để tạo ra bức khắc hoàn chỉnh phục phụ cho in tranh. Sau khi dùng những bản khắc gỗ sẵn, quét nước vào, đặt giấy lên cho thật phẳng phiu, dùng xơ mướp khô xoa nhẹ, đều để làm nổi rõ các hình, các nét rồi sẽ đem phơi nắng. Chờ cho tranh khô, người làm tranh mới mang vào chấm màu, vẽ thêm nét cho bức tranh thật sinh động, nổi bật. Chổi để tô màu cho loại tranh này luôn làm bằng rơm nếp, tạo độ mềm mại vừa phải và dễ điều chỉnh cho mỗi nét tô.",
+                        "<img src='./kim_hoang_4.jpg' alt='' class='w-full h-auto object-cover rounded-sm shadow-md my-6'>",
+                        "Theo thời gian, nền đỏ vẫn giữ được phẩm chất như ban đầu nhờ sử dụng các loại mực tàu và các loại màu sắc khác có nguồn gốc tự nhiên. Những màu này được trộn chung với keo da trâu để cho ra màu sắc chấm phá tạo tính độc đáo và sự ấn tượng cho bức tranh."
+                    ] },
+                    { heading: "5. Giá trị", content: [
+                        "Tranh dân gian Tranh Kim Hoàng xưa kia có giá trị lớn trong đời sống tinh thần của người dân, thường được treo vào dịp Tết để cầu may mắn, hạnh phúc và thể hiện ước vọng về cuộc sống sungtext túc. Về nghệ thuật, tranh nổi bật với màu nền đỏ hoặc vàng, nét khắc mộc mạc nhưng sinh động, thể hiện nét đẹp văn hóa dân gian Bắc Bộ.",
+                        "<img src='./kim_hoang_5.jpg' alt='' class='w-full h-auto object-cover rounded-sm shadow-md my-6'>",
+                        "Ngày nay, tranh Kim Hoàng không chỉ được phục dựng như một di sản văn hóa truyền thống mà còn mang giá trị nghiên cứu, giáo dục và du lịch. Dòng tranh góp phần gìn giữ bản sắc mỹ thuật dân gian Việt Nam và được sáng tạo, ứng dụng trong nhiều sản phẩm văn hóa hiện đại."
+                    ] },
+                    { heading: "6. Kết luận", content: [
+                        "Tranh dân gian Tranh Kim Hoàng là một nét đẹp độc đáo của mỹ thuật dân gian Việt Nam, phản ánh đời sống, ước mơ và tinh thần lạc quan của người dân xưa. Dù từng có thời gian mai một, dòng tranh này ngày nay đang được nghiên cứu và phục dựng, góp phần gìn giữ giá trị văn hóa truyền thống. Sự hồi sinh của tranh Kim Hoàng không chỉ khẳng định giá trị nghệ thuật mà còn giúp kết nối di sản dân gian với đời sống hiện đại.",
+                        "<img src='./kim_hoang_6.jpg' alt='' class='w-full h-auto object-cover rounded-sm shadow-md my-6'>"
+                    ] }
+                ]
+            },
+            {
+                id: "tranh-tho", title: "Tranh Thờ", location: "Miền núi phía Bắc",
+                quote: "Tranh thờ miền núi phía Bắc, tiêu biểu là dòng tranh của các tộc người Dao, Tày, Nùng, không đơn thuần là một sản phẩm mỹ thuật dân gian mà còn là một loại hình pháp khí tôn giáo mang tính linh thiêng cao độ. Loại hình nghệ thuật này phản ánh hiện tượng đồng hóa và tiếp biến văn hóa sâu sắc giữa Đạo giáo phù thủy từ Trung Hoa và tín ngưỡng đa thần bản địa của cư dân vùng cao Việt Nam.",
+                img: "./tranh_tho_cover.jpg",
+                coverImg: "./tranh_tho_cover.jpg",
+                sections: [
+                    { heading: "1. Sự dung hợp tư tưởng và hình thái học", content: [
+                        "Tranh thờ miền núi phía Bắc, tiêu biểu là dòng tranh của các tộc người Dao, Tày, Nùng, không đơn thuần là một sản phẩm mỹ thuật dân gian mà còn là một loại hình pháp khí tôn giáo mang tính linh thiêng cao độ. Loại hình nghệ thuật này phản ánh hiện tượng đồng hóa và tiếp biến văn hóa sâu sắc giữa Đạo giáo phù thủy từ Trung Hoa và tín ngưỡng đa thần bản địa của cư dân vùng cao Việt Nam. Theo nhà nghiên cứu Phan Cẩm Thượng trong công trình Văn minh Việt Nam, tranh thờ đóng vai trò là \"linh vật\" không thể thiếu trong các nghi lễ vòng đời và sinh hoạt cộng đồng. Chúng không chỉ thể hiện một thế giới quan thần bí mà còn là phương tiện thực hiện chức năng thông linh, trừ tà và thiết lập trật tự tâm linh cho bản làng.",
+                        "<img src='./tranh_tho_1.jpg' alt='' class='w-full h-auto object-cover rounded-sm shadow-md my-6'>"
+                    ] },
+                    { heading: "2. Lịch sử hình thành: Di cư, nội sinh và xác lập vị thế di sản", content: [
+                        "Lịch sử hình thành của tranh thờ gắn liền với những biến động về dân cư và sự xác lập vị thế di sản qua nhiều thế kỷ. Giai đoạn từ thế kỷ XV đến XVII đánh dấu sự du nhập của các bản mẫu và kinh sách Đạo giáo cổ theo chân người Dao di cư từ vùng Hoa Nam vào Việt Nam. Bước sang thế kỷ XVIII - XIX, mỹ thuật tôn giáo vùng cao bước vào thời kỳ cực thịnh khi dần thoát ly khỏi sự nghiêm cẩn của phương Bắc để tích hợp các yếu tố thẩm mỹ nội sinh như trang phục thổ cẩm và hình ảnh sinh hoạt bản địa. Sự công nhận của Nhà nước vào năm 2021 đối với Nghề làm tranh thờ của người Dao Đỏ tại Sa Pa là Di sản văn hóa phi vật thể quốc gia đã khẳng định sức sống mãnh liệt của dòng tranh này trong dòng chảy văn hóa dân tộc.",
+                        "<img src='./tranh_tho_2.jpg' alt='' class='w-full h-auto object-cover rounded-sm shadow-md my-6'>",
+                        "<p class='text-center text-sm italic opacity-70 mt-2'>Công tào Thiên phủ, Địa phủ, tranh thờ dân tộc Dao</p>"
+                    ] },
+                    { heading: "3. Chủ thể sáng tạo: Sự kế thừa mang tính thụ giới", content: [
+                        "Trong xã hội truyền thống miền núi, người nghệ nhân vẽ tranh thường đồng thời giữ vai trò thầy cúng (Thầy Tào, Thầy Mo), tạo nên một sự kế thừa mang tính thụ giới nghiêm ngặt. Việc vẽ tranh được coi là hành động \"hành thiện tích đức\" chứ không đơn thuần là lao động nghệ thuật vị nghệ thuật. Theo tài liệu từ Bảo tàng Dân tộc học Việt Nam, người thợ vẽ phải tuân thủ các điều cấm kỵ ngặt nghèo như chay tịnh, tẩy trần và thực hiện các nghi thức nghiêm ngặt trước khi đặt bút. Sự tinh khiết của nghệ nhân chính là điều kiện tiên quyết để bức tranh có thể trở thành \"vật chứa\" linh hồn thần linh, đảm bảo tính thiêng liêng tuyệt đối cho các nghi lễ sau này.",
+                        "<img src='./tranh_tho_3.jpg' alt='' class='w-full h-auto object-cover rounded-sm shadow-md my-6'>"
+                    ] },
+                    { heading: "4. Đặc điểm nghệ thuật: Biểu tượng học và ngôn ngữ tạo hình", content: [
+                        "Về mặt biểu tượng học, tranh thờ miền núi phía Bắc là một hệ thống thần phả phức tạp với sự phân cấp quyền năng rõ rệt theo tư tưởng Đạo giáo. Chiếm vị trí tối cao là hệ thống Tam Thanh cai quản vũ trụ, tiếp nối bởi hệ thống Tứ Trực và Thập Điện đại diện cho quyền năng điều hành thời gian và phán xét nhân quả. Ngôn ngữ hội họa ở đây từ chối phối cảnh viễn cận phương Tây để sử dụng phối cảnh ý niệm, nơi kích thước nhân vật tỉ lệ thuận với quyền năng của họ. Hệ màu sắc tương phản mạnh giữa đỏ (dương tính) và đen (âm tính) không chỉ tạo nên sự huyền bí mà còn giúp bức tranh tương thích với không gian kiến trúc nhà sàn tối và trầm mặc đặc trưng.",
+                        "<img src='./tranh_tho_4.jpg' alt='' class='w-full h-auto object-cover rounded-sm shadow-md my-6'>"
+                    ] },
+                    { heading: "5. Quy trình chế tác: Kỹ nghệ dân gian và nghi lễ tâm linh", content: [
+                        "Quy trình chế tác tranh thờ là sự kết hợp nhuần nhuyễn giữa kỹ nghệ dân gian và nghi lễ tâm linh. Nền tranh là giấy dó được bồi thủ công nhiều lớp bằng hồ nếp, tạo ra độ bền bỉ trước khí hậu nồm ẩm vùng cao. Màu sắc được chiết xuất hoàn toàn từ khoáng vật và thực vật tự nhiên như chu sa, quả dành dành hay lá chàm, hòa quyện với nhựa cây sung để tạo độ bóng và độ bám hàng trăm năm. Tuy nhiên, linh hồn của bức tranh chỉ thực sự xuất hiện sau nghi lễ \"Khai quang\" (Điểm nhãn). Khi thầy cúng dùng bút điểm thêm lòng đen vào mắt thần đi kèm các câu thần chú thỉnh cầu, bức tranh chính thức chuyển hóa từ vật thể thành linh vật và chỉ được mở ra trong những dịp đại lễ.",
+                        "<img src='./tranh_tho_5.jpg' alt='' class='w-full h-auto object-cover rounded-sm shadow-md my-6'>"
+                    ] },
+                    { heading: "6. Kết luận: Giá trị di sản và triết lý nhân sinh tộc người", content: [
+                        "Tranh thờ miền núi phía Bắc là một \"vũ trụ quan thu nhỏ\" thể hiện trí tuệ và đức tin của con người vùng cao. Sự tồn tại của dòng tranh này minh chứng cho sức sống mãnh liệt của văn hóa nội sinh trong quá trình tiếp biến văn hóa ngoại lai. Việc bảo tồn di sản này không chỉ dừng lại ở việc lưu giữ hiện vật mà còn đòi hỏi duy trì môi trường diễn xướng nghi lễ và tri thức của các nghệ nhân thầy cúng. Họ chính là những \"pho sử sống\", giữ gìn sợi dây kết nối giữa con người và thế giới tâm linh, tạo nên sự ổn định tinh thần trước những biến động của đời sống vùng cao.",
+                        "<img src='./tranh_tho_6.jpg' alt='' class='w-full h-auto object-cover rounded-sm shadow-md my-6'>"
+                    ] }
+                ]
+            }
+        ];
+
+        // 2. KHỞI TẠO BIỂU TƯỢNG (ICONS)
+        lucide.createIcons();
+
+        // 3. XỬ LÝ SCROLL & HIỆU ỨNG NAVBAR / HERO BACKGROUND ZOOM
+        const navbar = document.getElementById('navbar');
+        const logoText = document.getElementById('logo-text');
+        const mainLogo = document.getElementById('main-logo');
+        const desktopMenu = document.getElementById('desktop-menu');
+        const mobileBtn = document.getElementById('mobile-menu-btn');
+        const menuIcon = document.getElementById('menu-icon');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const heroBg = document.getElementById('hero-bg');
+
+        let currentView = 'home';
+        let isMenuOpen = false;
+
+        mobileBtn.addEventListener('click', () => {
+            isMenuOpen = !isMenuOpen;
+            if (isMenuOpen) {
+                mobileMenu.classList.remove('max-h-0');
+                mobileMenu.classList.add('max-h-64', 'border-b');
+                menuIcon.setAttribute('data-lucide', 'x');
+            } else {
+                mobileMenu.classList.add('max-h-0');
+                mobileMenu.classList.remove('max-h-64', 'border-b');
+                menuIcon.setAttribute('data-lucide', 'menu');
+            }
+            lucide.createIcons();
+        });
+
+        function handleScroll() {
+            const scrollY = window.scrollY;
+
+            // Navbar Effect
+            const isScrolled = scrollY > 80;
+            if (isScrolled) {
+                navbar.classList.add('bg-white', 'shadow-md', 'py-4');
+                navbar.classList.remove('bg-transparent', 'py-6');
+                
+                logoText.classList.add('text-primary');
+                logoText.classList.remove('text-white');
+                mainLogo.classList.add('text-primary');
+                mainLogo.classList.remove('text-white');
+                
+                desktopMenu.classList.add('text-dark');
+                desktopMenu.classList.remove('text-white');
+                mobileBtn.classList.add('text-dark');
+                mobileBtn.classList.remove('text-white');
+            } else if (currentView === 'home') {
+                navbar.classList.remove('bg-white', 'shadow-md', 'py-4');
+                navbar.classList.add('bg-transparent', 'py-6');
+                
+                logoText.classList.remove('text-primary');
+                logoText.classList.add('text-white');
+                mainLogo.classList.remove('text-primary');
+                mainLogo.classList.add('text-white');
+                
+                desktopMenu.classList.remove('text-dark');
+                desktopMenu.classList.add('text-white');
+                mobileBtn.classList.remove('text-dark');
+                mobileBtn.classList.add('text-white');
+            }
+
+            // Hero Image Zoom + Parallax Effect
+            if (heroBg && currentView === 'home') {
+                const scale = 1 + (scrollY * 0.0008); 
+                const yPos = scrollY * 0.4;
+                heroBg.style.transform = `translate3d(0, ${yPos}px, 0) scale(${scale})`;
+            }
+        }
+
+        window.addEventListener('scroll', handleScroll);
+        lenis.on('scroll', handleScroll);
+
+        // 4. HIỆU ỨNG REVEAL ON SCROLL
+        const observerOptions = {
+            threshold: 0.15,
+            rootMargin: "0px 0px -50px 0px"
+        };
+        const observer = new IntersectionObserver(function(entries, observer) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+
+        function observeElements() {
+            document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+        }
+
+        // 5. RENDER GALLERY TRANG CHỦ
+        function renderGallery() {
+            const grid = document.getElementById('gallery-grid');
+            grid.innerHTML = '';
+            
+            craftsData.forEach((craft, index) => {
+                const delay = (index % 3) * 150;
+                const cardHtml = `
+                    <div class="reveal group cursor-pointer flex flex-col h-full" style="transition-delay: ${delay}ms" onclick="showDetail('${craft.id}')">
+                        <div class="relative overflow-hidden aspect-[4/5] mb-6">
+                            <img src="${craft.img}" alt="" class="w-full h-full object-cover transform scale-100 group-hover:scale-105 transition-transform duration-[1.5s] ease-out filter grayscale-[20%] group-hover:grayscale-0" />
+                            <div class="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors duration-500"></div>
+                            <div class="absolute top-6 left-0 bg-white px-4 py-2 shadow-lg z-10 rounded-r-sm border-l-2 border-primary">
+                                <span class="text-primary text-xs font-bold uppercase tracking-widest">${craft.location}</span>
+                            </div>
+                        </div>
+                        <div class="flex-grow flex flex-col justify-start">
+                            <h3 class="text-2xl md:text-3xl font-serif text-dark mb-4 group-hover:text-primary transition-colors duration-300">${craft.title}</h3>
+                            <div class="w-8 h-[1px] bg-secondary mb-4 transition-all duration-500 group-hover:w-16"></div>
+                            <p class="text-gray-500 line-clamp-3 leading-relaxed text-sm mb-6 flex-grow">${craft.sections[0].content[0].replace(/<img[^>]*>/g,"")}</p>
+                            <div class="inline-flex items-center text-primary text-xs font-bold uppercase tracking-widest group-hover:gap-4 transition-all duration-300 gap-2 mt-auto">
+                                Đọc chi tiết <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                grid.insertAdjacentHTML('beforeend', cardHtml);
+            });
+            lucide.createIcons();
+            observeElements();
+        }
+
+        // 6. XỬ LÝ CHUYỂN TRANG / CHUYỂN VIEW
+        function navigate(view) {
+            currentView = view;
+            
+            lenis.scrollTo(0, { immediate: true });
+            
+            // Hide all views first
+            document.getElementById('home-view').classList.remove('active');
+            document.getElementById('detail-view').classList.remove('active');
+            const teamView = document.getElementById('team-view');
+            const feedbackView = document.getElementById('feedback-view');
+            if(teamView) teamView.classList.remove('active');
+            if(feedbackView) feedbackView.classList.remove('active');
+
+            if (view === 'home') {
+                document.getElementById('home-view').classList.add('active');
+                if (heroBg) heroBg.style.transform = `translate3d(0, 0px, 0) scale(1)`;
+            } else if (view === 'team' || view === 'feedback') {
+                if(teamView && view === 'team') teamView.classList.add('active');
+                if(feedbackView && view === 'feedback') feedbackView.classList.add('active');
+                
+                // Set Navbar to solid for inner views
+                navbar.classList.add('bg-white', 'shadow-md', 'py-4');
+                navbar.classList.remove('bg-transparent', 'py-6');
+                logoText.classList.add('text-primary');
+                logoText.classList.remove('text-white');
+                mainLogo.classList.add('text-primary');
+                mainLogo.classList.remove('text-white');
+                desktopMenu.classList.add('text-dark');
+                desktopMenu.classList.remove('text-white');
+                mobileBtn.classList.add('text-dark');
+                mobileBtn.classList.remove('text-white');
+                
+                setTimeout(observeElements, 100);
+            }
+            
+            window.dispatchEvent(new Event('scroll'));
+        }
+
+        function scrollToSection(id) {
+            navigate('home');
+            setTimeout(() => {
+                const el = document.getElementById(id);
+                if(el) {
+                    lenis.scrollTo(el, { duration: 1.5, easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)) });
+                }
+            }, 100);
+            
+            if(isMenuOpen) mobileBtn.click();
+        }
+
+        function showDetail(craftId) {
+            const craft = craftsData.find(c => c.id === craftId);
+            if(!craft) return;
+
+            document.getElementById('detail-cover').style.backgroundImage = `url('${craft.coverImg}')`;
+            document.getElementById('detail-location').innerText = `Khám Phá Di Sản • ${craft.location}`;
+            document.getElementById('detail-title').innerText = craft.title;
+            document.getElementById('detail-quote').innerText = craft.quote;
+
+            const sectionsContainer = document.getElementById('detail-sections');
+            sectionsContainer.innerHTML = '';
+            
+            craft.sections.forEach((sec, idx) => {
+                const direction = idx % 2 === 0 ? 'reveal-left' : 'reveal-right';
+                const rowClass = idx % 2 !== 0 ? 'md:flex-row-reverse' : 'md:flex-row';
+                
+                let paragraphs = sec.content.map(p => {
+                    if(p.trim().startsWith('<img') || p.trim().startsWith('<p class=')) {
+                        return p; 
+                    }
+                    return `<p class="text-justify">${p}</p>`;
+                }).join('');
+
+                const secHtml = `
+                    <div class="reveal ${direction} flex flex-col gap-8 md:gap-16 ${rowClass}">
+                        <div class="w-full md:w-1/3">
+                            <div class="sticky top-32">
+                                <h2 class="text-2xl md:text-3xl font-serif text-dark mb-4">${sec.heading}</h2>
+                                <div class="w-10 h-1 bg-primary"></div>
+                            </div>
+                        </div>
+                        <div class="w-full md:w-2/3">
+                            <div class="space-y-6 text-[#5a5043] text-base md:text-lg leading-loose font-light">
+                                ${paragraphs}
+                            </div>
+                        </div>
+                    </div>
+                `;
+                sectionsContainer.insertAdjacentHTML('beforeend', secHtml);
+            });
+
+            document.getElementById('home-view').classList.remove('active');
+            document.getElementById('detail-view').classList.add('active');
+            
+            navbar.classList.add('bg-white', 'shadow-md', 'py-4');
+            navbar.classList.remove('bg-transparent', 'py-6');
+            
+            logoText.classList.add('text-primary');
+            logoText.classList.remove('text-white');
+            mainLogo.classList.add('text-primary');
+            mainLogo.classList.remove('text-white');
+            
+            desktopMenu.classList.add('text-dark');
+            desktopMenu.classList.remove('text-white');
+            mobileBtn.classList.add('text-dark');
+            mobileBtn.classList.remove('text-white');
+
+            lenis.scrollTo(0, { immediate: true });
+            setTimeout(observeElements, 100);
+        }
+
+        // 7. KHỞI CHẠY
+        document.addEventListener('DOMContentLoaded', () => {
+            renderGallery();
+        });
+
+    </script>
+</body>
+</html>
